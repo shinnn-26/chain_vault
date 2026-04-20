@@ -1,0 +1,41 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "C:\\Users\\harsh\\OneDrive\\Documents\\VSCODE\\B\\chainvault\\contracts\\ChainVault.sol": {
+      "lastModificationDate": 1774930956810,
+      "contentHash": "2ed1b13c25495e3283ab4c20457e9e54",
+      "sourceName": "contracts/ChainVault.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "FileStorage"
+      ]
+    }
+  }
+}

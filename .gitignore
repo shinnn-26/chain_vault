@@ -1,0 +1,5 @@
+node_modules/
+uploads/
+chainvault/node_modules/
+.env
+*.log

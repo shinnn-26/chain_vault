@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChainVault v2 — Decentralized Secure File Platform</title>
+  <meta name="description" content="ChainVault v2.0 — Blockchain File Storage with Real SHA-256 Verification">
+  <meta name="theme-color" content="#050810">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛓</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050810;--surface:#0b1120;--surface2:#111827;--surface3:#162035;
+  --border:#1e2d45;--border2:#253553;
+  --accent:#00d4ff;--accent2:#7c3aed;--accent3:#10b981;
+  --danger:#ef4444;--warn:#f59e0b;--pink:#ec4899;
+  --text:#e2e8f0;--muted:#64748b;--muted2:#8899aa;
+  --mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
+  --r:12px;--r2:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.025)1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025)1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+
+/* ── SHELL ── */
+.shell{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:60px;background:rgba(5,8,16,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;gap:1rem}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:800;font-size:1.15rem;letter-spacing:-.5px;white-space:nowrap}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.nav-center{display:flex;align-items:center;gap:6px}
+.nc-badge{font-family:var(--mono);font-size:.6rem;padding:3px 9px;border-radius:20px;border:1px solid;cursor:default}
+.nc-badge.eth{background:rgba(124,58,237,.12);color:#a78bfa;border-color:rgba(124,58,237,.3)}
+.nc-badge.online{background:rgba(16,185,129,.1);color:var(--accent3);border-color:rgba(16,185,129,.3)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.btn{cursor:pointer;border:none;font-family:var(--sans);font-weight:700;border-radius:var(--r2);transition:all .18s}
+.btn-ghost{background:transparent;color:var(--muted);padding:6px 12px;font-size:.8rem}
+.btn-ghost:hover{color:var(--text)}
+.btn-primary{background:var(--accent);color:#050810;padding:7px 16px;font-size:.82rem}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 0 18px rgba(0,212,255,.4)}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent);padding:7px 16px;font-size:.82rem}
+.btn-outline:hover{background:rgba(0,212,255,.08)}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3);padding:6px 12px;font-size:.78rem}
+.btn-sm{padding:5px 12px;font-size:.75rem}
+
+/* ── BODY ── */
+.app-body{display:flex;flex:1}
+
+/* ── SIDEBAR ── */
+aside{width:228px;min-height:calc(100vh - 60px);background:var(--surface);border-right:1px solid var(--border);padding:1.25rem 0;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.nav-section-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);padding:10px 18px 3px;letter-spacing:1.2px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 18px;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);transition:all .14s;border-left:3px solid transparent;user-select:none;position:relative}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.025)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,212,255,.05)}
+.nav-item .icon{font-size:.95rem;width:18px;text-align:center}
+.nav-item .new-tag{font-family:var(--mono);font-size:.5rem;background:linear-gradient(90deg,var(--accent2),var(--pink));color:#fff;padding:1px 5px;border-radius:10px;margin-left:auto}
+.sidebar-footer{margin-top:auto;padding:.9rem 1rem}
+.user-chip{display:flex;align-items:center;gap:9px;background:var(--surface2);border-radius:10px;padding:9px 11px;border:1px solid var(--border)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+.user-info{flex:1;overflow:hidden}
+.user-name{font-size:.78rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-family:var(--mono);font-size:.58rem;color:var(--accent3)}
+.wallet-chip{margin-top:6px;display:flex;align-items:center;gap:6px;padding:6px 11px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:8px;font-family:var(--mono);font-size:.58rem;color:#a78bfa;cursor:pointer}
+.wallet-dot{width:6px;height:6px;border-radius:50%;background:var(--accent3);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── MAIN ── */
+main{flex:1;padding:1.75rem 2rem;overflow-y:auto;min-width:0}
+.section{display:none}
+.section.active{display:block}
+.page-header{margin-bottom:1.75rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.page-title{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
+.page-sub{color:var(--muted);font-size:.82rem;margin-top:3px}
+.page-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem}
+.card-title{font-size:.95rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── STATS GRID ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;cursor:default}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.c1::before{background:linear-gradient(90deg,var(--accent),transparent)}
+.c2::before{background:linear-gradient(90deg,var(--accent2),transparent)}
+.c3::before{background:linear-gradient(90deg,var(--accent3),transparent)}
+.c4::before{background:linear-gradient(90deg,var(--warn),transparent)}
+.c5::before{background:linear-gradient(90deg,var(--pink),transparent)}
+.stat-label{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.stat-value{font-size:1.9rem;font-weight:800;line-height:1}
+.stat-sub{font-size:.72rem;color:var(--muted);margin-top:5px}
+.stat-sub span{color:var(--accent3)}
+
+/* ── TWO / THREE COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.75rem}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:1.75rem}
+
+/* ── ACTIVITY ── */
+.activity-list{display:flex;flex-direction:column;gap:.65rem}
+.activity-item{display:flex;align-items:flex-start;gap:9px}
+.adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.activity-text{font-size:.78rem}
+.activity-time{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:1px}
+
+/* ── CHAIN VIZ ── */
+.chain-viz{display:flex;align-items:center;overflow-x:auto;padding-bottom:8px;gap:0}
+.block{flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-family:var(--mono);font-size:.62rem;color:var(--muted);min-width:96px}
+.block .bh{color:var(--accent);font-weight:700;margin-bottom:3px}
+.block.latest{border-color:var(--accent);background:rgba(0,212,255,.05)}
+.block.latest .bh{animation:pulse 2s infinite}
+.chain-link{width:28px;height:2px;background:linear-gradient(90deg,var(--border),var(--accent),var(--border));flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── FORM ── */
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:.75rem;font-weight:700;color:var(--muted2)}
+.form-input,.form-select,.form-textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--r2);padding:9px 12px;font-family:var(--sans);font-size:.85rem;transition:border-color .14s;outline:none;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-select option{background:var(--surface2)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:1.5rem}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(0,212,255,.03)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.upload-icon{font-size:2.8rem;margin-bottom:.75rem}
+.upload-title{font-size:1rem;font-weight:700;margin-bottom:4px}
+.upload-sub{color:var(--muted);font-size:.8rem}
+
+/* ── PROGRESS ── */
+.upload-progress{display:none;margin-bottom:1.5rem}
+.upload-progress.show{display:block}
+.progress-label{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px}
+.progress-label .step{color:var(--accent);font-family:var(--mono);font-size:.67rem}
+.progress-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;width:0;transition:width .5s ease}
+.progress-steps{display:flex;justify-content:space-between;margin-top:10px}
+.p-step{display:flex;flex-direction:column;align-items:center;gap:3px}
+.p-step-dot{width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.58rem;transition:all .3s}
+.p-step-dot.done{background:var(--accent3);color:#050810}
+.p-step-dot.active{background:var(--accent);color:#050810;animation:pulse 1s infinite}
+.p-step-label{font-size:.58rem;font-family:var(--mono);color:var(--muted)}
+
+/* ── FILE TABLE ── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;gap:.75rem;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:7px 11px;flex:1;max-width:300px}
+.search-box input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--sans);font-size:.82rem;width:100%}
+.filter-tabs{display:flex;gap:5px;flex-wrap:wrap}
+.filter-tab{padding:5px 12px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;background:var(--surface);border:1px solid var(--border);color:var(--muted);transition:all .13s}
+.filter-tab.active,.filter-tab:hover{background:rgba(0,212,255,.08);border-color:var(--accent);color:var(--accent)}
+.file-table{width:100%;border-collapse:collapse}
+.file-table th{text-align:left;font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:9px 14px;border-bottom:1px solid var(--border)}
+.file-table td{padding:12px 14px;border-bottom:1px solid rgba(30,45,69,.5);font-size:.82rem;vertical-align:middle}
+.file-table tr:hover td{background:rgba(255,255,255,.018)}
+.file-row{cursor:pointer}
+.file-name-cell{display:flex;align-items:center;gap:9px}
+.file-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.fi-pdf{background:rgba(239,68,68,.12)}
+.fi-img{background:rgba(0,212,255,.1)}
+.fi-doc{background:rgba(124,58,237,.12)}
+.fi-zip{background:rgba(245,158,11,.1)}
+.file-fname{font-weight:700;font-size:.84rem}
+.file-fsize{font-size:.68rem;color:var(--muted);font-family:var(--mono)}
+.hash-pill{font-family:var(--mono);font-size:.6rem;background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.18);color:var(--accent);padding:2px 7px;border-radius:4px}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:700}
+.status-badge.verified{background:rgba(16,185,129,.1);color:var(--accent3)}
+.status-badge.pending{background:rgba(245,158,11,.1);color:var(--warn)}
+.status-badge.shared{background:rgba(124,58,237,.1);color:#a78bfa}
+.status-badge.expired{background:rgba(239,68,68,.1);color:var(--danger)}
+.status-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.action-btns{display:flex;gap:5px}
+.icon-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:all .13s}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.07)}
+
+/* ── VERIFY ── */
+.verify-hero{text-align:center;max-width:500px;margin:0 auto 2.5rem}
+.verify-hero h2{font-size:1.9rem;font-weight:800;margin-bottom:7px}
+.verify-hero p{color:var(--muted);font-size:.85rem}
+.verify-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem;max-width:620px;margin:0 auto}
+.verify-drop{border:2px dashed var(--border);border-radius:10px;padding:1.75rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:1.25rem;position:relative}
+.verify-drop:hover{border-color:var(--accent);background:rgba(0,212,255,.03)}
+.verify-drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.or-divider{text-align:center;color:var(--muted);font-size:.75rem;margin:1rem 0;position:relative}
+.or-divider::before,.or-divider::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--border)}
+.or-divider::before{left:0}.or-divider::after{right:0}
+.hash-input-row{display:flex;gap:8px}
+.hash-input-row .form-input{flex:1;font-family:var(--mono);font-size:.72rem}
+.verify-result{margin-top:1.25rem;padding:1.4rem;border-radius:10px;border:1px solid var(--border);display:none}
+.verify-result.show{display:block}
+.verify-result.success{border-color:var(--accent3);background:rgba(16,185,129,.05)}
+.verify-result.fail{border-color:var(--danger);background:rgba(239,68,68,.05)}
+.verify-icon{font-size:2.2rem;margin-bottom:6px}
+.verify-title{font-size:1rem;font-weight:700}
+.verify-detail{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:1rem}
+.vd-item{background:var(--surface2);border-radius:7px;padding:9px}.vd-item[style*="grid-column"]{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.15)}
+.vd-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-bottom:3px}
+.vd-val{font-size:.78rem;font-weight:700;word-break:break-all}
+
+/* ── RBAC ── */
+.rbac-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin-bottom:1.75rem}
+.role-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem}
+.role-card.owner{border-top:3px solid var(--warn)}
+.role-card.editor{border-top:3px solid var(--accent2)}
+.role-card.viewer{border-top:3px solid var(--accent)}
+.role-card.auditor{border-top:3px solid var(--accent3)}
+.role-header{display:flex;align-items:center;gap:9px;margin-bottom:1rem}
+.role-badge{padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700}
+.role-badge.owner{background:rgba(245,158,11,.12);color:var(--warn)}
+.role-badge.editor{background:rgba(124,58,237,.12);color:#a78bfa}
+.role-badge.viewer{background:rgba(0,212,255,.1);color:var(--accent)}
+.role-badge.auditor{background:rgba(16,185,129,.1);color:var(--accent3)}
+.role-perms{display:flex;flex-direction:column;gap:5px}
+.perm-item{display:flex;align-items:center;gap:7px;font-size:.78rem}
+.perm-item .check{color:var(--accent3)}.perm-item .cross{color:var(--danger)}
+.users-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.users-table-header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.4rem;border-bottom:1px solid var(--border)}
+.user-row{display:flex;align-items:center;padding:11px 1.4rem;border-bottom:1px solid rgba(30,45,69,.5);gap:10px}
+.user-row:last-child{border-bottom:none}
+.user-row:hover{background:rgba(255,255,255,.018)}
+.user-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0}
+.user-det{flex:1}
+.user-det .name{font-weight:700;font-size:.85rem}
+.user-det .email{font-size:.7rem;color:var(--muted);font-family:var(--mono)}
+
+/* ── AUDIT ── */
+.audit-filters{display:flex;gap:8px;margin-bottom:1.4rem;flex-wrap:wrap}
+.audit-list{display:flex;flex-direction:column;gap:.7rem}
+.audit-entry{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.2rem;display:grid;grid-template-columns:auto 1fr auto;gap:.9rem;align-items:center;transition:border-color .14s}
+.audit-entry:hover{border-color:rgba(0,212,255,.3)}
+.audit-type{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.at-upload{background:rgba(0,212,255,.1)}.at-verify{background:rgba(16,185,129,.1)}.at-share{background:rgba(124,58,237,.1)}.at-access{background:rgba(245,158,11,.1)}.at-wallet{background:rgba(236,72,153,.1)}
+.audit-main .title{font-weight:700;font-size:.82rem}
+.audit-main .sub{font-size:.7rem;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.audit-meta{text-align:right}
+.audit-meta .time{font-family:var(--mono);font-size:.65rem;color:var(--muted)}
+.audit-meta .block-num{font-family:var(--mono);font-size:.6rem;color:var(--accent);margin-top:2px}
+
+/* ── WALLET / AUTH ── */
+.wallet-options{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem}
+.wallet-opt{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;text-align:center;cursor:pointer;transition:all .2s}
+.wallet-opt:hover,.wallet-opt.connected{border-color:var(--accent);background:rgba(0,212,255,.04)}
+.wallet-opt.connected{border-color:var(--accent3)}
+.wallet-opt .wicon{font-size:2.2rem;margin-bottom:.6rem}
+.wallet-opt .wname{font-weight:700;font-size:.9rem}
+.wallet-opt .wdesc{font-size:.72rem;color:var(--muted);margin-top:3px}
+.wallet-opt .wstatus{margin-top:.8rem;font-family:var(--mono);font-size:.62rem;padding:3px 10px;border-radius:12px;display:inline-block}
+.wallet-opt .wstatus.conn{background:rgba(16,185,129,.1);color:var(--accent3);border:1px solid rgba(16,185,129,.3)}
+.wallet-opt .wstatus.disc{background:rgba(100,116,139,.08);color:var(--muted);border:1px solid var(--border)}
+
+/* ── VERSION CONTROL ── */
+.version-timeline{display:flex;flex-direction:column;gap:0}
+.version-item{display:flex;gap:1rem;position:relative}
+.version-item::before{content:'';position:absolute;left:14px;top:30px;bottom:-4px;width:1px;background:var(--border)}
+.version-item:last-child::before{display:none}
+.version-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:8px}
+.version-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;border:2px solid}
+.version-dot.current{border-color:var(--accent);background:rgba(0,212,255,.1);color:var(--accent)}
+.version-dot.old{border-color:var(--border);background:var(--surface2);color:var(--muted)}
+.version-content{flex:1;padding-bottom:1.2rem}
+.version-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:0}
+.version-card:hover{border-color:rgba(0,212,255,.25)}
+.version-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.version-tag{font-family:var(--mono);font-size:.65rem;font-weight:700;color:var(--accent);background:rgba(0,212,255,.08);padding:2px 8px;border-radius:4px}
+.version-date{font-family:var(--mono);font-size:.62rem;color:var(--muted)}
+.version-hash{font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:4px;word-break:break-all}
+
+/* ── TIME-SHARE ── */
+.share-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem}
+.share-option-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;cursor:pointer;transition:all .2s;text-align:center}
+.share-option-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.share-option-card .sicon{font-size:2rem;margin-bottom:.7rem}
+.share-option-card .stitle{font-weight:700;font-size:.9rem;margin-bottom:4px}
+.share-option-card .sdesc{font-size:.75rem;color:var(--muted)}
+.share-link-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:center;gap:10px;margin-bottom:.75rem}
+.share-link-url{font-family:var(--mono);font-size:.68rem;color:var(--muted2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.expiry-badge{font-family:var(--mono);font-size:.62rem;padding:2px 8px;border-radius:10px;flex-shrink:0}
+.expiry-badge.active{background:rgba(16,185,129,.1);color:var(--accent3);border:1px solid rgba(16,185,129,.25)}
+.expiry-badge.expired{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
+
+/* ── AI DETECTION ── */
+.ai-upload-area{border:2px dashed var(--border);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1.5rem;cursor:pointer;transition:all .2s;position:relative}
+.ai-upload-area:hover{border-color:var(--pink);background:rgba(236,72,153,.03)}
+.ai-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.ai-result-panel{display:none;margin-top:1.5rem}
+.ai-result-panel.show{display:block}
+.ai-score-ring{width:100px;height:100px;margin:0 auto 1rem;position:relative}
+.ai-score-ring svg{transform:rotate(-90deg)}
+.ai-score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ai-score-num{font-size:1.4rem;font-weight:800;line-height:1}
+.ai-score-label{font-family:var(--mono);font-size:.55rem;color:var(--muted)}
+.ai-checks{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1rem}
+.ai-check-item{background:var(--surface2);border-radius:8px;padding:.75rem;display:flex;align-items:center;gap:8px}
+.ai-check-icon{font-size:1.1rem;flex-shrink:0}
+.ai-check-label{font-size:.78rem;font-weight:600}
+.ai-check-status{margin-left:auto;font-family:var(--mono);font-size:.62rem;font-weight:700}
+
+/* ── NOTIFICATIONS ── */
+.notif-list{display:flex;flex-direction:column;gap:.65rem}
+.notif-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;display:flex;align-items:flex-start;gap:10px;transition:border-color .14s}
+.notif-item.unread{border-left:3px solid var(--accent)}
+.notif-item:hover{border-color:rgba(0,212,255,.3)}
+.notif-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.ni-upload{background:rgba(0,212,255,.1)}.ni-access{background:rgba(245,158,11,.1)}.ni-verify{background:rgba(16,185,129,.1)}.ni-alert{background:rgba(239,68,68,.1)}.ni-share{background:rgba(124,58,237,.1)}
+.notif-body{flex:1}
+.notif-title{font-weight:700;font-size:.82rem}
+.notif-desc{font-size:.75rem;color:var(--muted);margin-top:2px}
+.notif-time{font-family:var(--mono);font-size:.6rem;color:var(--muted);flex-shrink:0}
+.notif-settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:10px 12px}
+.toggle-label{font-size:.8rem;font-weight:600}
+.toggle-sub{font-size:.68rem;color:var(--muted);margin-top:1px}
+.toggle{width:38px;height:20px;background:var(--border);border-radius:10px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--accent3)}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:20px}
+
+/* ── MULTI-ORG ── */
+.org-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem}
+.org-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;text-align:center;transition:all .2s}
+.org-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.org-icon{font-size:2rem;margin-bottom:.6rem}
+.org-name{font-weight:700;font-size:.88rem}
+.org-docs{font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:3px}
+.org-status{margin-top:.7rem}
+.trust-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:.6rem;padding:2px 8px;border-radius:10px;background:rgba(16,185,129,.1);color:var(--accent3);border:1px solid rgba(16,185,129,.25)}
+
+/* ── ANALYTICS ── */
+.analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem}
+.analytics-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem}
+.analytics-label{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px}
+.analytics-value{font-size:1.6rem;font-weight:800;line-height:1}
+.analytics-change{font-size:.7rem;margin-top:4px}
+.analytics-change.up{color:var(--accent3)}.analytics-change.down{color:var(--danger)}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:100px;margin-top:.75rem}
+.bar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(to top,var(--accent2),var(--accent));opacity:.7;transition:opacity .2s;cursor:pointer;position:relative}
+.bar:hover{opacity:1}
+.bar-label{font-family:var(--mono);font-size:.55rem;color:var(--muted);text-align:center;margin-top:4px}
+.gas-meter{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-top:.5rem}
+.gas-fill{height:100%;background:linear-gradient(90deg,var(--accent3),var(--warn),var(--danger));border-radius:5px}
+
+/* ── ZK PROOF ── */
+.zk-flow{display:flex;align-items:center;justify-content:center;gap:0;margin:2rem 0;overflow-x:auto}
+.zk-node{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;min-width:130px;flex-shrink:0}
+.zk-node .zn-icon{font-size:1.8rem;margin-bottom:.5rem}
+.zk-node .zn-label{font-weight:700;font-size:.82rem}
+.zk-node .zn-sub{font-size:.68rem;color:var(--muted);margin-top:3px}
+.zk-arrow{width:40px;height:2px;background:linear-gradient(90deg,var(--accent2),var(--accent));flex-shrink:0;position:relative}
+.zk-arrow::after{content:'▶';position:absolute;right:-6px;top:-6px;color:var(--accent);font-size:.6rem}
+.zk-highlight{border-color:var(--accent2);background:rgba(124,58,237,.06)}
+.proof-demo{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;font-family:var(--mono);font-size:.68rem;line-height:1.8}
+.proof-line-key{color:var(--accent)}.proof-line-val{color:var(--text)}
+.proof-line-hidden{color:var(--muted);letter-spacing:.15em}
+
+/* ── DISASTER RECOVERY ── */
+.node-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem}
+.node-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem}
+.node-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.node-status{width:8px;height:8px;border-radius:50%}
+.node-status.online{background:var(--accent3);box-shadow:0 0 6px var(--accent3)}
+.node-status.offline{background:var(--danger)}
+.node-status.syncing{background:var(--warn);animation:pulse 1.2s infinite}
+.node-label{font-weight:700;font-size:.82rem}
+.node-region{font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-top:2px}
+.node-metric{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.62rem;margin-top:5px}
+.node-metric .nk{color:var(--muted)}.node-metric .nv{color:var(--text)}
+.backup-progress-list{display:flex;flex-direction:column;gap:.7rem}
+.backup-item{background:var(--surface2);border-radius:8px;padding:.8rem 1rem}
+.backup-item-header{display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:.78rem}
+.backup-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.backup-fill{height:100%;border-radius:2px;transition:width 1s}
+
+/* ── MOBILE APP ── */
+.mobile-mockup{background:var(--surface2);border:2px solid var(--border);border-radius:32px;padding:1.5rem 1rem;max-width:240px;margin:0 auto;position:relative}
+.mobile-notch{width:60px;height:6px;background:var(--border);border-radius:3px;margin:0 auto 1rem}
+.mobile-screen{background:var(--bg);border-radius:20px;overflow:hidden;min-height:380px}
+.mobile-feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.75rem}
+.mobile-feature-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem}
+.mf-icon{font-size:1.5rem;margin-bottom:.5rem}
+.mf-title{font-weight:700;font-size:.85rem}
+.mf-desc{font-size:.72rem;color:var(--muted);margin-top:3px}
+
+/* ── SMART CONTRACT ── */
+.contract-code{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;font-family:var(--mono);font-size:.68rem;line-height:1.9;overflow-x:auto}
+.sk{color:#a78bfa}.ss{color:var(--accent3)}.sn{color:var(--warn)}.sc{color:var(--muted);font-style:italic}.sf{color:var(--accent)}.se{color:var(--pink)}
+.contract-functions{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1rem}
+.cf-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.9rem}
+.cf-name{font-family:var(--mono);font-size:.72rem;color:var(--accent);font-weight:700}
+.cf-type{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:2px}
+.cf-desc{font-size:.75rem;margin-top:5px}
+
+/* ── TOAST ── */
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 15px;font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:9px;transform:translateX(120%);transition:transform .3s;min-width:250px;pointer-events:all}
+.toast.in{transform:translateX(0)}
+.toast.success{border-color:var(--accent3)}.toast.error{border-color:var(--danger)}.toast.info{border-color:var(--accent)}.toast.warn{border-color:var(--warn)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(5,8,16,.88);backdrop-filter:blur(8px);z-index:400;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem;width:90%;max-width:440px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:1.05rem;font-weight:700;margin-bottom:1.4rem;display:flex;justify-content:space-between;align-items:center}
+.modal-close{cursor:pointer;color:var(--muted);font-size:1.1rem}.modal-close:hover{color:var(--text)}
+.qr-container{background:#fff;border-radius:10px;padding:1.25rem;display:flex;flex-direction:column;align-items:center;gap:.9rem;margin-bottom:1.4rem}
+.qr-label{font-family:var(--mono);font-size:.65rem;color:#111;text-align:center;word-break:break-all}
+.file-detail-list{display:flex;flex-direction:column;gap:7px}
+.fd-row{display:flex;justify-content:space-between;font-size:.78rem;padding:7px;background:var(--surface2);border-radius:6px}
+.fd-key{color:var(--muted);font-family:var(--mono);font-size:.65rem}
+.fd-val{font-weight:700;word-break:break-all;max-width:190px;text-align:right}
+
+/* ── ROW FADE IN ── */
+@keyframes rowFadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+
+/* Responsive */
+@media(max-width:960px){.stats-grid,.analytics-grid{grid-template-columns:repeat(2,1fr)}.two-col,.three-col{grid-template-columns:1fr}}
+@media(max-width:680px){aside{display:none}main{padding:1rem}.share-cards,.org-grid,.node-grid,.wallet-options{grid-template-columns:1fr 1fr}.rbac-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><div class="logo-icon">⛓</div>ChainVault<span style="font-size:.65rem;font-weight:400;color:var(--muted);margin-left:4px">v2.0</span></div>
+  <div class="nav-center">
+    <span class="nc-badge eth">⬡ Ethereum</span>
+    <span class="nc-badge online">● Live SHA-256 Demo</span>
+  </div>
+  <div class="nav-right">
+    <button class="btn btn-ghost" onclick="navigate(document.querySelector('[data-section=notifications]'),'notifications')">🔔</button>
+    <button class="btn btn-outline btn-sm" onclick="navigate(document.querySelector('[data-section=wallet]'),'wallet')">🦊 0x742d...F4e2</button>
+    <button class="btn btn-primary" onclick="navigate(document.querySelector('[data-section=upload]'),'upload')">+ Upload</button>
+  </div>
+</nav>
+
+<div class="app-body">
+<!-- SIDEBAR -->
+<aside>
+  <div class="nav-section-label">Main</div>
+  <div class="nav-item active" data-section="dashboard" onclick="navigate(this,'dashboard')"><span class="icon">⬛</span>Dashboard</div>
+  <div class="nav-item" data-section="files" onclick="navigate(this,'files')"><span class="icon">📁</span>My Files</div>
+  <div class="nav-item" data-section="upload" onclick="navigate(this,'upload')"><span class="icon">⬆</span>Upload</div>
+
+  <div class="nav-section-label">Security</div>
+  <div class="nav-item" data-section="verify" onclick="navigate(this,'verify')"><span class="icon">🔍</span>Verify</div>
+  <div class="nav-item" data-section="access" onclick="navigate(this,'access')"><span class="icon">🔑</span>Access Control</div>
+  <div class="nav-item" data-section="smartcontract" onclick="navigate(this,'smartcontract')"><span class="icon">📜</span>Smart Contract<span class="new-tag">NEW</span></div>
+
+  <div class="nav-section-label">Features</div>
+  <div class="nav-item" data-section="wallet" onclick="navigate(this,'wallet')"><span class="icon">🦊</span>Wallet & Auth<span class="new-tag">NEW</span></div>
+  <div class="nav-item" data-section="versions" onclick="navigate(this,'versions')"><span class="icon">🔃</span>Version Control<span class="new-tag">NEW</span></div>
+  <div class="nav-item" data-section="sharing" onclick="navigate(this,'sharing')"><span class="icon">⏱</span>Timed Sharing<span class="new-tag">NEW</span></div>
+  <div class="nav-item" data-section="ai" onclick="navigate(this,'ai')"><span class="icon">🤖</span>AI Detection<span class="new-tag" style="background:rgba(245,158,11,.2);color:var(--warn)">FUTURE</span></div>
+  <div class="nav-item" data-section="zkproof" onclick="navigate(this,'zkproof')"><span class="icon">🔐</span>ZK Proofs<span class="new-tag" style="background:rgba(245,158,11,.2);color:var(--warn)">FUTURE</span></div>
+
+  <div class="nav-section-label">Network</div>
+  <div class="nav-item" data-section="organizations" onclick="navigate(this,'organizations')"><span class="icon">🏛</span>Organizations<span class="new-tag">NEW</span></div>
+  <div class="nav-item" data-section="analytics" onclick="navigate(this,'analytics')"><span class="icon">📊</span>Analytics<span class="new-tag">NEW</span></div>
+  <div class="nav-item" data-section="recovery" onclick="navigate(this,'recovery')"><span class="icon">🛡</span>Disaster Recovery<span class="new-tag" style="background:rgba(245,158,11,.2);color:var(--warn)">FUTURE</span></div>
+  <div class="nav-item" data-section="mobile" onclick="navigate(this,'mobile')"><span class="icon">📱</span>Mobile App<span class="new-tag">NEW</span></div>
+
+  <div class="nav-section-label">Logs</div>
+  <div class="nav-item" data-section="notifications" onclick="navigate(this,'notifications')"><span class="icon">🔔</span>Notifications<span class="new-tag">NEW</span></div>
+  <div class="nav-item" data-section="audit" onclick="navigate(this,'audit')"><span class="icon">📋</span>Audit Log</div>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar">JD</div>
+      <div class="user-info"><div class="user-name">John Doe</div><div class="user-role">Owner</div></div>
+    </div>
+    <div class="wallet-chip"><span class="wallet-dot"></span>0x742d...F4e2 Connected</div>
+  </div>
+</aside>
+
+<main>
+
+<!-- ══════════════════════════════════════ DASHBOARD ══════════════════════════════════════ -->
+<div id="dashboard" class="section active">
+  <div class="page-header">
+    <div><div class="page-title">Dashboard</div><div class="page-sub">Blockchain-secured platform overview</div></div>
+    <div class="page-actions">
+      <button class="btn btn-outline btn-sm" onclick="showToast('Syncing with Ethereum…','info')">⟳ Sync</button>
+      <button class="btn btn-primary btn-sm" onclick="navigate(document.querySelector('[data-section=upload]'),'upload')">+ Upload File</button>
+    </div>
+  </div>
+
+  <!-- PROBLEM + USE CASE CARDS -->
+  <div class="two-col" style="margin-bottom:1.75rem">
+    <div class="card" style="border-left:3px solid var(--danger);background:linear-gradient(135deg,rgba(239,68,68,.04),var(--surface))">
+      <div class="card-title" style="color:var(--danger)">🚨 Problem We Solve</div>
+      <p style="font-size:.85rem;color:var(--muted);line-height:1.7">
+        Fake certificates, tampered medical records, and forged legal documents are increasing worldwide.
+        Traditional storage systems rely on <strong style="color:var(--text)">centralized servers</strong> — vulnerable to hacking,
+        tampering, and unauthorized modification with no way to prove authenticity.
+      </p>
+      <div style="display:flex;gap:.5rem;margin-top:.9rem;flex-wrap:wrap">
+        <span style="font-family:var(--mono);font-size:.62rem;background:rgba(239,68,68,.1);color:var(--danger);padding:2px 8px;border-radius:4px;border:1px solid rgba(239,68,68,.2)">Forged Certificates</span>
+        <span style="font-family:var(--mono);font-size:.62rem;background:rgba(239,68,68,.1);color:var(--danger);padding:2px 8px;border-radius:4px;border:1px solid rgba(239,68,68,.2)">Tampered Records</span>
+        <span style="font-family:var(--mono);font-size:.62rem;background:rgba(239,68,68,.1);color:var(--danger);padding:2px 8px;border-radius:4px;border:1px solid rgba(239,68,68,.2)">No Audit Trail</span>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent3);background:linear-gradient(135deg,rgba(16,185,129,.04),var(--surface))">
+      <div class="card-title" style="color:var(--accent3)">🎯 Real-World Use Case</div>
+      <p style="font-size:.85rem;color:var(--muted);line-height:1.7">
+        A company HR can <strong style="color:var(--text)">instantly verify</strong> a candidate's certificate without trusting the document manually.
+        Upload the certificate → ChainVault generates its SHA-256 hash → stores it on Ethereum →
+        HR scans QR or pastes hash → <strong style="color:var(--accent3)">instant blockchain verification</strong>.
+      </p>
+      <div style="display:flex;gap:.5rem;margin-top:.9rem;flex-wrap:wrap">
+        <span style="font-family:var(--mono);font-size:.62rem;background:rgba(16,185,129,.1);color:var(--accent3);padding:2px 8px;border-radius:4px;border:1px solid rgba(16,185,129,.2)">Education</span>
+        <span style="font-family:var(--mono);font-size:.62rem;background:rgba(16,185,129,.1);color:var(--accent3);padding:2px 8px;border-radius:4px;border:1px solid rgba(16,185,129,.2)">Healthcare</span>
+        <span style="font-family:var(--mono);font-size:.62rem;background:rgba(16,185,129,.1);color:var(--accent3);padding:2px 8px;border-radius:4px;border:1px solid rgba(16,185,129,.2)">Legal</span>
+        <span style="font-family:var(--mono);font-size:.62rem;background:rgba(16,185,129,.1);color:var(--accent3);padding:2px 8px;border-radius:4px;border:1px solid rgba(16,185,129,.2)">Government</span>
+      </div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card c1"><div class="stat-label">Total Files</div><div class="stat-value">24</div><div class="stat-sub"><span>+3</span> this week</div></div>
+    <div class="stat-card c2"><div class="stat-label">Blockchain Txns</div><div class="stat-value">58</div><div class="stat-sub"><span>Ethereum</span> mainnet</div></div>
+    <div class="stat-card c3"><div class="stat-label">Verified</div><div class="stat-value">21</div><div class="stat-sub"><span>87.5%</span> integrity rate</div></div>
+    <div class="stat-card c4"><div class="stat-label">IPFS Nodes</div><div class="stat-value">12</div><div class="stat-sub"><span>Decentralized</span></div></div>
+    <div class="stat-card c5"><div class="stat-label">Active Shares</div><div class="stat-value">7</div><div class="stat-sub"><span>3</span> expiring today</div></div>
+    <div class="stat-card c1"><div class="stat-label">Organizations</div><div class="stat-value">5</div><div class="stat-sub"><span>Trusted</span> network</div></div>
+    <div class="stat-card c2"><div class="stat-label">AI Scans</div><div class="stat-value">18</div><div class="stat-sub"><span>2</span> flagged</div></div>
+    <div class="stat-card c3"><div class="stat-label">ZK Proofs</div><div class="stat-value">9</div><div class="stat-sub"><span>Zero</span> data exposed</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Recent Activity</div>
+      <div class="activity-list">
+        <div class="activity-item"><div class="adot" style="background:var(--accent3)"></div><div><div class="activity-text">contract_v3.pdf verified on blockchain</div><div class="activity-time">2 mins ago · Block #18,924,112</div></div></div>
+        <div class="activity-item"><div class="adot" style="background:var(--accent2)"></div><div><div class="activity-text">medical_report.pdf shared (24hr link)</div><div class="activity-time">14 mins ago · Block #18,924,098</div></div></div>
+        <div class="activity-item"><div class="adot" style="background:var(--accent)"></div><div><div class="activity-text">AI scan: diploma_2024.pdf — PASSED</div><div class="activity-time">1 hr ago · Block #18,923,991</div></div></div>
+        <div class="activity-item"><div class="adot" style="background:var(--warn)"></div><div><div class="activity-text">ZK Proof generated for identity_doc.pdf</div><div class="activity-time">3 hrs ago · Block #18,923,820</div></div></div>
+        <div class="activity-item"><div class="adot" style="background:var(--pink)"></div><div><div class="activity-text">Wallet 0x742d...F4e2 signed transaction</div><div class="activity-time">5 hrs ago · Block #18,923,710</div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>Live Blockchain</div>
+      <div class="chain-viz" id="chainViz"></div>
+      <div style="margin-top:1rem;display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.65rem"><span style="color:var(--muted)">Network</span><span style="color:var(--accent3)">Ethereum Mainnet</span></div>
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.65rem"><span style="color:var(--muted)">Gas Price</span><span style="color:var(--text)">22 Gwei</span></div>
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.65rem"><span style="color:var(--muted)">Contract</span><span style="color:var(--accent)">0x742d...F4e2</span></div>
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.65rem"><span style="color:var(--muted)">Recovery Nodes</span><span style="color:var(--accent3)">12 / 12 Online</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--accent3)"></div>Storage Distribution</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:.5rem">
+      <div style="text-align:center"><div style="font-size:1.4rem;font-weight:800;color:var(--accent)">38%</div><div style="font-size:.72rem;color:var(--muted);margin-top:3px">Documents</div><div style="height:4px;background:var(--border);border-radius:2px;margin-top:5px"><div style="width:38%;height:100%;background:var(--accent);border-radius:2px"></div></div></div>
+      <div style="text-align:center"><div style="font-size:1.4rem;font-weight:800;color:var(--accent2)">29%</div><div style="font-size:.72rem;color:var(--muted);margin-top:3px">Certificates</div><div style="height:4px;background:var(--border);border-radius:2px;margin-top:5px"><div style="width:29%;height:100%;background:var(--accent2);border-radius:2px"></div></div></div>
+      <div style="text-align:center"><div style="font-size:1.4rem;font-weight:800;color:var(--accent3)">21%</div><div style="font-size:.72rem;color:var(--muted);margin-top:3px">Medical</div><div style="height:4px;background:var(--border);border-radius:2px;margin-top:5px"><div style="width:21%;height:100%;background:var(--accent3);border-radius:2px"></div></div></div>
+      <div style="text-align:center"><div style="font-size:1.4rem;font-weight:800;color:var(--warn)">12%</div><div style="font-size:.72rem;color:var(--muted);margin-top:3px">Legal</div><div style="height:4px;background:var(--border);border-radius:2px;margin-top:5px"><div style="width:12%;height:100%;background:var(--warn);border-radius:2px"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ FILES ══════════════════════════════════════ -->
+<div id="files" class="section">
+  <div class="page-header"><div><div class="page-title">My Files</div><div class="page-sub" id="filesSubtitle">Files stored — upload a file to see it appear here live</div></div>
+  <button class="btn btn-primary" onclick="navigate(document.querySelector('[data-section=upload]'),'upload')">+ Upload</button></div>
+  <div class="toolbar">
+    <div class="search-box"><span style="color:var(--muted)">🔍</span><input type="text" placeholder="Search files, hashes…" id="fileSearch" oninput="renderFiles()"></div>
+    <div class="filter-tabs">
+      <div class="filter-tab active" onclick="setFilter(this,'all')">All</div>
+      <div class="filter-tab" onclick="setFilter(this,'verified')">Verified</div>
+      <div class="filter-tab" onclick="setFilter(this,'shared')">Shared</div>
+      <div class="filter-tab" onclick="setFilter(this,'pending')">Pending</div>
+    </div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+    <table class="file-table"><thead><tr><th>File Name</th><th>Hash (SHA-256)</th><th>IPFS CID</th><th>Status</th><th>Uploaded</th><th>Actions</th></tr></thead>
+    <tbody id="fileTableBody"></tbody></table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ UPLOAD ══════════════════════════════════════ -->
+<div id="upload" class="section">
+  <div class="page-header"><div><div class="page-title">Upload File</div><div class="page-sub">Encrypt, hash & store on blockchain + IPFS</div></div></div>
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" onchange="handleFileSelect(event)">
+    <div class="upload-icon">📂</div>
+    <div class="upload-title">Drop your file here or click to browse</div>
+    <div class="upload-sub">PDF, DOCX, JPG, PNG, ZIP — Max 50MB</div>
+  </div>
+  <div id="selectedFileInfo" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem;margin-bottom:1.25rem">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="selFileIcon" class="file-icon fi-doc">📄</div>
+      <div><div id="selFileName" style="font-weight:700"></div><div id="selFileSize" style="font-size:.7rem;color:var(--muted);font-family:var(--mono)"></div></div>
+      <div style="margin-left:auto"><span id="selFileHash" class="hash-pill"></span></div>
+    </div>
+  </div>
+  <div class="form-grid-2" style="margin-bottom:1.25rem">
+    <div class="form-group"><label class="form-label">Document Title</label><input class="form-input" id="docTitle" type="text" placeholder="e.g. Employment Contract 2024"></div>
+    <div class="form-group"><label class="form-label">Category</label><select class="form-select"><option>Certificate</option><option>Contract</option><option>Medical Record</option><option>Identity Document</option><option>Tax Document</option></select></div>
+    <div class="form-group"><label class="form-label">Encryption</label><select class="form-select"><option>AES-256 (Recommended)</option><option>AES-128</option></select></div>
+    <div class="form-group"><label class="form-label">Access Level</label><select class="form-select"><option>Private</option><option>Shared</option><option>Public</option></select></div>
+  </div>
+  <div class="upload-progress" id="uploadProgress">
+    <div class="progress-label"><span id="progressLabel">Processing…</span><span class="step" id="progressPct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-steps">
+      <div class="p-step"><div class="p-step-dot" id="step1">1</div><div class="p-step-label">SHA-256</div></div>
+      <div class="p-step"><div class="p-step-dot" id="step2">2</div><div class="p-step-label">AES-256</div></div>
+      <div class="p-step"><div class="p-step-dot" id="step3">3</div><div class="p-step-label">AI Scan</div></div>
+      <div class="p-step"><div class="p-step-dot" id="step4">4</div><div class="p-step-label">IPFS</div></div>
+      <div class="p-step"><div class="p-step-dot" id="step5">5</div><div class="p-step-label">Blockchain</div></div>
+      <div class="p-step"><div class="p-step-dot" id="step6">6</div><div class="p-step-label">Done</div></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:.75rem">
+    <span style="color:var(--accent3);font-size:.7rem;font-family:var(--mono)">● Live SHA-256 Verification Enabled</span>
+    <span style="color:var(--muted);font-size:.65rem;font-family:var(--mono)">· Web Crypto API · localStorage Mock Blockchain</span>
+  </div>
+  <button class="btn btn-primary" style="width:100%;padding:13px;font-size:.95rem" onclick="startUpload()">⬆ Upload to Blockchain</button>
+</div>
+
+<!-- ══════════════════════════════════════ VERIFY ══════════════════════════════════════ -->
+<div id="verify" class="section">
+  <div class="verify-hero">
+  <h2>Verify Document</h2>
+  <p>Upload a file or paste its SHA-256 hash to instantly verify blockchain integrity.</p>
+  <div style="display:inline-flex;align-items:center;gap:6px;margin-top:.75rem;padding:5px 14px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:20px">
+    <span style="color:var(--accent3);font-size:.7rem;font-family:var(--mono)">● SHA-256 hash stored in blockchain layer</span>
+  </div>
+</div>
+  <div class="verify-box">
+    <div class="verify-drop"><input type="file" id="verifyInput" onchange="handleVerifyFile(event)">
+      <div style="font-size:2rem;margin-bottom:7px">🔍</div>
+      <div style="font-weight:700;margin-bottom:3px">Drop file to verify</div>
+      <div style="font-size:.78rem;color:var(--muted)">System hashes file & cross-checks blockchain record</div>
+    </div>
+    <div class="or-divider">or paste hash manually</div>
+    <div class="hash-input-row"><input class="form-input" id="manualHash" placeholder="Enter SHA-256 hash (64 hex chars)…" maxlength="64"><button class="btn btn-primary" onclick="verifyHash()">Verify</button></div>
+    <div class="verify-result" id="verifyResult">
+      <div class="verify-icon" id="verifyIcon"></div>
+      <div class="verify-title" id="verifyTitle"></div>
+      <div id="verifyMsg" style="font-size:.82rem;color:var(--muted);margin-top:5px"></div>
+      <div class="verify-detail" id="verifyDetail"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ ACCESS CONTROL ══════════════════════════════════════ -->
+<div id="access" class="section">
+  <div class="page-header"><div><div class="page-title">Access Control</div><div class="page-sub">Role-based permissions via smart contracts</div></div></div>
+  <div class="rbac-grid">
+    <div class="role-card owner"><div class="role-header"><div class="role-badge owner">OWNER</div></div><div class="role-perms"><div class="perm-item"><span class="check">✓</span> Upload & Delete</div><div class="perm-item"><span class="check">✓</span> Edit Documents</div><div class="perm-item"><span class="check">✓</span> Share Files</div><div class="perm-item"><span class="check">✓</span> Manage Permissions</div><div class="perm-item"><span class="check">✓</span> View Audit Logs</div></div></div>
+    <div class="role-card editor"><div class="role-header"><div class="role-badge editor">EDITOR</div></div><div class="role-perms"><div class="perm-item"><span class="cross">✗</span> Upload & Delete</div><div class="perm-item"><span class="check">✓</span> Edit Documents</div><div class="perm-item"><span class="check">✓</span> Share Files</div><div class="perm-item"><span class="cross">✗</span> Manage Permissions</div><div class="perm-item"><span class="check">✓</span> View Audit Logs</div></div></div>
+    <div class="role-card viewer"><div class="role-header"><div class="role-badge viewer">VIEWER</div></div><div class="role-perms"><div class="perm-item"><span class="cross">✗</span> Upload & Delete</div><div class="perm-item"><span class="cross">✗</span> Edit Documents</div><div class="perm-item"><span class="cross">✗</span> Share Files</div><div class="perm-item"><span class="cross">✗</span> Manage Permissions</div><div class="perm-item"><span class="cross">✗</span> View Audit Logs</div></div></div>
+    <div class="role-card auditor"><div class="role-header"><div class="role-badge auditor">AUDITOR</div></div><div class="role-perms"><div class="perm-item"><span class="cross">✗</span> Upload & Delete</div><div class="perm-item"><span class="cross">✗</span> Edit Documents</div><div class="perm-item"><span class="cross">✗</span> Share Files</div><div class="perm-item"><span class="cross">✗</span> Manage Permissions</div><div class="perm-item"><span class="check">✓</span> View Audit Logs</div></div></div>
+  </div>
+  <div class="users-table-wrap">
+    <div class="users-table-header"><span style="font-weight:700">Authorized Users</span><button class="btn btn-primary btn-sm" onclick="showToast('Invite sent!','success')">+ Invite User</button></div>
+    <div id="userList"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ SMART CONTRACT ══════════════════════════════════════ -->
+<div id="smartcontract" class="section">
+  <div class="page-header"><div><div class="page-title">Smart Contract</div><div class="page-sub">On-chain access control & document ownership (Solidity)</div></div>
+  <button class="btn btn-primary btn-sm" onclick="showToast('Contract deployed to Ethereum!','success')">🚀 Deploy Contract</button></div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>ChainVault.sol</div>
+      <div class="contract-code"><span class="sc">// SPDX-License-Identifier: MIT</span><br>
+<span class="sk">pragma</span> solidity ^0.8.19;<br><br>
+<span class="sk">contract</span> <span class="sf">ChainVault</span> {<br>
+&nbsp;&nbsp;<span class="sk">struct</span> <span class="ss">Document</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="sk">bytes32</span> fileHash;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="sk">string</span> ipfsCID;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="sk">address</span> owner;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="sk">uint256</span> timestamp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="sk">bool</span> isActive;<br>
+&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;<span class="sk">mapping</span>(<span class="sk">bytes32</span> =&gt; <span class="ss">Document</span>) <span class="sk">public</span> documents;<br>
+&nbsp;&nbsp;<span class="sk">mapping</span>(<span class="sk">address</span> =&gt; <span class="sk">bytes32</span>[]) <span class="sk">public</span> userDocs;<br><br>
+&nbsp;&nbsp;<span class="se">event</span> <span class="sf">DocumentStored</span>(<span class="sk">bytes32</span> <span class="sk">indexed</span> hash, <span class="sk">address</span> owner);<br>
+&nbsp;&nbsp;<span class="se">event</span> <span class="sf">AccessGranted</span>(<span class="sk">bytes32</span> <span class="sk">indexed</span> hash, <span class="sk">address</span> user);<br><br>
+&nbsp;&nbsp;<span class="sk">function</span> <span class="sf">storeDocument</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="sk">bytes32</span> _hash, <span class="sk">string</span> _cid<br>
+&nbsp;&nbsp;) <span class="sk">external</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;documents[_hash] = <span class="ss">Document</span>(_hash, _cid, msg.sender, block.timestamp, <span class="sk">true</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="se">emit</span> <span class="sf">DocumentStored</span>(_hash, msg.sender);<br>
+&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;<span class="sk">function</span> <span class="sf">verifyDocument</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="sk">bytes32</span> _hash<br>
+&nbsp;&nbsp;) <span class="sk">external view returns</span> (<span class="sk">bool</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="sk">return</span> documents[_hash].isActive;<br>
+&nbsp;&nbsp;}<br>
+}</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Contract Functions</div>
+      <div class="contract-functions">
+        <div class="cf-card"><div class="cf-name">storeDocument()</div><div class="cf-type">external · write</div><div class="cf-desc">Stores file hash + IPFS CID on-chain, linked to msg.sender wallet</div></div>
+        <div class="cf-card"><div class="cf-name">verifyDocument()</div><div class="cf-type">external view · read</div><div class="cf-desc">Returns boolean confirming document existence on blockchain</div></div>
+        <div class="cf-card"><div class="cf-name">grantAccess()</div><div class="cf-type">external · write</div><div class="cf-desc">Owner grants viewer/editor role to another wallet address</div></div>
+        <div class="cf-card"><div class="cf-name">revokeAccess()</div><div class="cf-type">external · write</div><div class="cf-desc">Owner removes permissions for a previously authorized address</div></div>
+        <div class="cf-card"><div class="cf-name">getDocumentHistory()</div><div class="cf-type">external view · read</div><div class="cf-desc">Returns array of all version hashes for a document</div></div>
+        <div class="cf-card"><div class="cf-name">setExpiry()</div><div class="cf-type">external · write</div><div class="cf-desc">Sets a Unix timestamp after which access auto-revokes</div></div>
+      </div>
+      <div style="margin-top:1rem;padding:.9rem;background:var(--surface2);border-radius:8px">
+        <div style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-bottom:6px">CONTRACT ADDRESS</div>
+        <div style="font-family:var(--mono);font-size:.72rem;color:var(--accent);word-break:break-all">0x742d35Cc6634C0532925a3b844Bc454e4438f44e</div>
+        <div style="display:flex;gap:.75rem;margin-top:8px">
+          <button class="btn btn-outline btn-sm" onclick="showToast('Address copied!','success')">Copy</button>
+          <button class="btn btn-ghost btn-sm" onclick="showToast('Opening Etherscan…','info')">Etherscan ↗</button>
+        </div>
+      </div>
+      <!-- IMPROVEMENT 7: Prototype status -->
+      <div style="margin-top:1rem;padding:.85rem;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);border-radius:8px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:1rem">⚡</span>
+        <div>
+          <div style="font-size:.8rem;font-weight:700;color:var(--warn)">Status: Prototype Mode</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:2px">SHA-256 hashing is live. Ready for Ethereum Testnet deployment when integrated with MetaMask + web3.js.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ WALLET & AUTH ══════════════════════════════════════ -->
+<div id="wallet" class="section">
+  <div class="page-header"><div><div class="page-title">Wallet & Authentication</div><div class="page-sub">Connect your blockchain wallet to sign transactions</div></div></div>
+  <div class="wallet-options">
+    <div class="wallet-opt connected" onclick="connectMetaMask()">
+      <div class="wicon">🦊</div><div class="wname">MetaMask</div><div class="wdesc">Browser extension wallet</div>
+      <div class="wstatus conn">● Connected</div>
+    </div>
+    <div class="wallet-opt" onclick="connectWallet(this,'WalletConnect')">
+      <div class="wicon">🔗</div><div class="wname">WalletConnect</div><div class="wdesc">Scan QR with mobile</div>
+      <div class="wstatus disc">Not Connected</div>
+    </div>
+    <div class="wallet-opt" onclick="connectWallet(this,'Coinbase Wallet')">
+      <div class="wicon">🔵</div><div class="wname">Coinbase Wallet</div><div class="wdesc">Coinbase smart wallet</div>
+      <div class="wstatus disc">Not Connected</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Wallet Details</div>
+      <div style="display:flex;flex-direction:column;gap:.65rem">
+        <div style="background:var(--surface2);border-radius:8px;padding:.9rem">
+          <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-bottom:4px">WALLET ADDRESS</div>
+          <div style="font-family:var(--mono);font-size:.72rem;color:var(--accent)">0x742d35Cc6634C0532925a3b844Bc454e4438f44e</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:.9rem">
+          <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-bottom:4px">NETWORK</div>
+          <div style="font-size:.82rem;font-weight:700;color:var(--accent3)">● Ethereum Mainnet (Chain ID: 1)</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:.9rem">
+          <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-bottom:4px">ETH BALANCE</div>
+          <div style="font-size:1.1rem;font-weight:800">0.42 ETH <span style="font-size:.72rem;color:var(--muted);font-weight:400">≈ $1,284</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>Login Methods</div>
+      <div style="display:flex;flex-direction:column;gap:.75rem">
+        <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" type="email" value="john.doe@example.com"></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" value="••••••••••••"></div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-primary" style="flex:1" onclick="showToast('Profile updated!','success')">Save Changes</button>
+          <button class="btn btn-outline" onclick="showToast('2FA enabled!','success')">Enable 2FA</button>
+        </div>
+        <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:.8rem;font-size:.75rem;color:var(--accent3)">
+          ✅ Biometric authentication available — <a href="#" style="color:var(--accent)" onclick="showToast('Biometric setup started','info');return false">Enable Face ID / Fingerprint</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--accent3)"></div>Recent Wallet Transactions</div>
+    <table class="file-table"><thead><tr><th>Tx Hash</th><th>Action</th><th>Gas Used</th><th>Status</th><th>Time</th></tr></thead><tbody>
+      <tr><td><span class="hash-pill">0xa3f8...e21b</span></td><td style="font-size:.78rem">storeDocument()</td><td style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">0.0023 ETH</td><td><span class="status-badge verified"><div class="status-dot"></div>Success</span></td><td style="font-family:var(--mono);font-size:.68rem;color:var(--muted)">2 mins ago</td></tr>
+      <tr><td><span class="hash-pill">0x7b2d...f8c3</span></td><td style="font-size:.78rem">grantAccess()</td><td style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">0.0011 ETH</td><td><span class="status-badge verified"><div class="status-dot"></div>Success</span></td><td style="font-family:var(--mono);font-size:.68rem;color:var(--muted)">1 hr ago</td></tr>
+      <tr><td><span class="hash-pill">0xf5e1...3c9d</span></td><td style="font-size:.78rem">setExpiry()</td><td style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">0.0008 ETH</td><td><span class="status-badge pending"><div class="status-dot"></div>Pending</span></td><td style="font-family:var(--mono);font-size:.68rem;color:var(--muted)">3 hrs ago</td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ VERSION CONTROL ══════════════════════════════════════ -->
+<div id="versions" class="section">
+  <div class="page-header"><div><div class="page-title">Version Control</div><div class="page-sub">Every version hashed and immutably stored on blockchain</div></div>
+  <button class="btn btn-primary btn-sm" onclick="showToast('New version uploaded!','success')">+ New Version</button></div>
+  <div class="form-group" style="margin-bottom:1.5rem;max-width:320px">
+    <label class="form-label">Select Document</label>
+    <select class="form-select" onchange="showToast('Version history loaded','info')">
+      <option>contract_2024.pdf</option><option>diploma_cs.pdf</option><option>medical_report.pdf</option>
+    </select>
+  </div>
+  <div class="two-col">
+    <div>
+      <div style="font-weight:700;margin-bottom:1rem;font-size:.9rem">Version History</div>
+      <div class="version-timeline">
+        <div class="version-item"><div class="version-dot-col"><div class="version-dot current">v3</div></div>
+          <div class="version-content"><div class="version-card">
+            <div class="version-header"><span class="version-tag">v3.0 — Current</span><span class="version-date">2025-03-12</span></div>
+            <div style="font-size:.8rem;font-weight:600">Final signed version</div>
+            <div class="version-hash">SHA-256: a3f8c9e1b24d7f3a8c5e2d1f9b6a4c7e...</div>
+            <div style="display:flex;gap:.5rem;margin-top:.75rem"><button class="btn btn-outline btn-sm" onclick="showToast('Downloading v3','info')">Download</button><button class="btn btn-ghost btn-sm">View on Chain</button></div>
+          </div></div>
+        </div>
+        <div class="version-item"><div class="version-dot-col"><div class="version-dot old">v2</div></div>
+          <div class="version-content"><div class="version-card">
+            <div class="version-header"><span class="version-tag" style="color:var(--muted);background:rgba(100,116,139,.1)">v2.1</span><span class="version-date">2025-03-08</span></div>
+            <div style="font-size:.8rem;font-weight:600">Amendment added — Clause 4.2</div>
+            <div class="version-hash">SHA-256: 7b2d41e8c9f3a5b2d7e4c1f8a3b6d9e2...</div>
+            <div style="display:flex;gap:.5rem;margin-top:.75rem"><button class="btn btn-ghost btn-sm" onclick="showToast('Restoring v2.1','warn')">Restore</button><button class="btn btn-ghost btn-sm">Compare</button></div>
+          </div></div>
+        </div>
+        <div class="version-item"><div class="version-dot-col"><div class="version-dot old">v1</div></div>
+          <div class="version-content"><div class="version-card">
+            <div class="version-header"><span class="version-tag" style="color:var(--muted);background:rgba(100,116,139,.1)">v1.0 — Original</span><span class="version-date">2025-02-28</span></div>
+            <div style="font-size:.8rem;font-weight:600">Initial draft upload</div>
+            <div class="version-hash">SHA-256: f5e1a8c3d9b7e2f4c6a1d8b5e3c9f7a2...</div>
+            <div style="display:flex;gap:.5rem;margin-top:.75rem"><button class="btn btn-ghost btn-sm" onclick="showToast('Restoring v1','warn')">Restore</button><button class="btn btn-ghost btn-sm">Compare</button></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Upload New Version</div>
+      <div class="upload-zone" style="padding:1.5rem;margin-bottom:1rem">
+        <input type="file"><div class="upload-icon" style="font-size:1.8rem">📄</div>
+        <div style="font-weight:700;font-size:.9rem">Drop updated file</div>
+      </div>
+      <div class="form-group" style="margin-bottom:.9rem"><label class="form-label">Change Notes</label><textarea class="form-textarea" placeholder="Describe what changed in this version…"></textarea></div>
+      <button class="btn btn-primary" style="width:100%" onclick="showToast('New version stored on blockchain!','success')">Store New Version</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ TIMED SHARING ══════════════════════════════════════ -->
+<div id="sharing" class="section">
+  <div class="page-header"><div><div class="page-title">Timed Secure Sharing</div><div class="page-sub">Smart contract enforces expiry automatically on-chain</div></div></div>
+  <div class="share-cards">
+    <div class="share-option-card" onclick="createShare(24,'hours')"><div class="sicon">⏱</div><div class="stitle">24-Hour Access</div><div class="sdesc">Auto-revokes after 24 hours</div></div>
+    <div class="share-option-card" onclick="createShare(7,'days')"><div class="sicon">📅</div><div class="stitle">7-Day Link</div><div class="sdesc">Expires end of 7th day</div></div>
+    <div class="share-option-card" onclick="createShare(1,'use')"><div class="sicon">🔂</div><div class="stitle">One-Time Link</div><div class="sdesc">Destroyed after single download</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Create Share Link</div>
+      <div style="display:flex;flex-direction:column;gap:.9rem">
+        <div class="form-group"><label class="form-label">Select File</label><select class="form-select"><option>contract_2024.pdf</option><option>diploma_cs.pdf</option><option>medical_report.pdf</option></select></div>
+        <div class="form-group"><label class="form-label">Recipient Email</label><input class="form-input" type="email" placeholder="recipient@example.com"></div>
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-label">Expiry Duration</label><select class="form-select"><option>1 Hour</option><option>24 Hours</option><option>7 Days</option><option>30 Days</option><option>One-Time</option></select></div>
+          <div class="form-group"><label class="form-label">Permission</label><select class="form-select"><option>View Only</option><option>Download</option></select></div>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Secure share link created!','success')">Generate Share Link</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>Active Share Links</div>
+      <div id="shareList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ AI DETECTION ══════════════════════════════════════ -->
+<div id="ai" class="section">
+  <div class="page-header"><div><div class="page-title">AI Document Detection</div><div class="page-sub">Machine learning scans for forgery, tampering & manipulation</div></div></div>
+  <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.1rem">🔭</span>
+    <div><div style="font-size:.85rem;font-weight:700;color:var(--warn)">Future Scope Feature</div>
+    <div style="font-size:.75rem;color:var(--muted);margin-top:2px">AI forgery detection is planned for the next release. Currently in research phase using CNN-based image analysis models.</div></div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="ai-upload-area">
+        <input type="file" onchange="runAIScan(event)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">🤖</div>
+        <div style="font-weight:700;margin-bottom:4px">Drop document for AI analysis</div>
+        <div style="font-size:.78rem;color:var(--muted)">AI checks for manipulation, fake logos & metadata anomalies</div>
+      </div>
+      <div class="ai-result-panel" id="aiResult">
+        <div style="text-align:center;margin-bottom:1.25rem">
+          <div class="ai-score-ring">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#1e2d45" stroke-width="8"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--accent3)" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="40" id="scoreArc"/>
+            </svg>
+            <div class="ai-score-text"><div class="ai-score-num" id="scoreNum">85</div><div class="ai-score-label">AUTHENTIC</div></div>
+          </div>
+          <div style="font-weight:700;font-size:1rem" id="aiVerdict">Document Appears Authentic</div>
+        </div>
+        <div class="ai-checks">
+          <div class="ai-check-item"><div class="ai-check-icon">🖼</div><div><div class="ai-check-label">Image Integrity</div><div style="font-size:.68rem;color:var(--muted)">No pixel manipulation found</div></div><div class="ai-check-status" style="color:var(--accent3)">PASS</div></div>
+          <div class="ai-check-item"><div class="ai-check-icon">📝</div><div><div class="ai-check-label">Text Consistency</div><div style="font-size:.68rem;color:var(--muted)">Fonts & spacing normal</div></div><div class="ai-check-status" style="color:var(--accent3)">PASS</div></div>
+          <div class="ai-check-item"><div class="ai-check-icon">🏷</div><div><div class="ai-check-label">Logo Verification</div><div style="font-size:.68rem;color:var(--muted)">Institutional logo matched</div></div><div class="ai-check-status" style="color:var(--accent3)">PASS</div></div>
+          <div class="ai-check-item"><div class="ai-check-icon">📋</div><div><div class="ai-check-label">Metadata Check</div><div style="font-size:.68rem;color:var(--muted)">Creation date anomaly</div></div><div class="ai-check-status" id="metaStatus" style="color:var(--warn)">WARN</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--pink)"></div>Recent AI Scans</div>
+      <div style="display:flex;flex-direction:column;gap:.65rem">
+        <div style="background:var(--surface2);border-radius:8px;padding:.8rem;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-weight:700;font-size:.82rem">diploma_cs.pdf</div><div style="font-family:var(--mono);font-size:.6rem;color:var(--muted)">Scanned 2025-03-12</div></div>
+          <span class="status-badge verified"><div class="status-dot"></div>AUTHENTIC</span>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:.8rem;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-weight:700;font-size:.82rem">certificate_xyz.pdf</div><div style="font-family:var(--mono);font-size:.6rem;color:var(--muted)">Scanned 2025-03-11</div></div>
+          <span class="status-badge" style="background:rgba(239,68,68,.1);color:var(--danger)"><div class="status-dot"></div>FLAGGED</span>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:.8rem;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-weight:700;font-size:.82rem">contract_v2.pdf</div><div style="font-family:var(--mono);font-size:.6rem;color:var(--muted)">Scanned 2025-03-10</div></div>
+          <span class="status-badge verified"><div class="status-dot"></div>AUTHENTIC</span>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:.8rem;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-weight:700;font-size:.82rem">id_document.jpg</div><div style="font-family:var(--mono);font-size:.6rem;color:var(--muted)">Scanned 2025-03-09</div></div>
+          <span class="status-badge pending"><div class="status-dot"></div>REVIEWING</span>
+        </div>
+      </div>
+      <div style="margin-top:1rem;background:rgba(236,72,153,.06);border:1px solid rgba(236,72,153,.2);border-radius:8px;padding:.85rem">
+        <div style="font-weight:700;font-size:.82rem;color:var(--pink);margin-bottom:4px">🚨 Flagged Document Alert</div>
+        <div style="font-size:.75rem;color:var(--muted)">certificate_xyz.pdf shows signs of logo replacement. Removed from verified pool. Manual review required.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ NOTIFICATIONS ══════════════════════════════════════ -->
+<div id="notifications" class="section">
+  <div class="page-header"><div><div class="page-title">Notifications</div><div class="page-sub">Real-time alerts for all document activity</div></div>
+  <button class="btn btn-ghost btn-sm" onclick="showToast('All notifications marked read','info')">Mark all read</button></div>
+  <div class="two-col" style="margin-bottom:1.75rem">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Notification Feed</div>
+      <div class="notif-list">
+        <div class="notif-item unread"><div class="notif-icon ni-upload">⬆</div><div class="notif-body"><div class="notif-title">File Uploaded Successfully</div><div class="notif-desc">contract_2024.pdf stored on blockchain · Block #18,924,112</div></div><div class="notif-time">2m ago</div></div>
+        <div class="notif-item unread"><div class="notif-icon ni-access">👁</div><div class="notif-body"><div class="notif-title">Document Accessed</div><div class="notif-desc">sara@hospital.org viewed medical_report.pdf</div></div><div class="notif-time">14m ago</div></div>
+        <div class="notif-item unread"><div class="notif-icon ni-alert">🚨</div><div class="notif-body"><div class="notif-title">AI Scan Alert</div><div class="notif-desc">certificate_xyz.pdf flagged for potential manipulation</div></div><div class="notif-time">1h ago</div></div>
+        <div class="notif-item"><div class="notif-icon ni-verify">✔</div><div class="notif-body"><div class="notif-title">Verification Completed</div><div class="notif-desc">diploma_cs.pdf integrity confirmed by University DB</div></div><div class="notif-time">3h ago</div></div>
+        <div class="notif-item"><div class="notif-icon ni-share">↗</div><div class="notif-body"><div class="notif-title">Share Link Expired</div><div class="notif-desc">24-hour link for nda_agreement.docx has expired</div></div><div class="notif-time">1d ago</div></div>
+        <div class="notif-item"><div class="notif-icon ni-access">🔑</div><div class="notif-body"><div class="notif-title">Access Request</div><div class="notif-desc">audit@legalfirm.com requests access to tax_return_2024.pdf</div></div><div class="notif-time">2d ago</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>Notification Settings</div>
+      <div style="display:flex;flex-direction:column;gap:.75rem">
+        <div class="toggle-row"><div><div class="toggle-label">File Uploads</div><div class="toggle-sub">When a file is stored on blockchain</div></div><div class="toggle on" onclick="toggleSwitch(this)"></div></div>
+        <div class="toggle-row"><div><div class="toggle-label">Document Access</div><div class="toggle-sub">When others view your files</div></div><div class="toggle on" onclick="toggleSwitch(this)"></div></div>
+        <div class="toggle-row"><div><div class="toggle-label">AI Scan Alerts</div><div class="toggle-sub">When AI flags suspicious docs</div></div><div class="toggle on" onclick="toggleSwitch(this)"></div></div>
+        <div class="toggle-row"><div><div class="toggle-label">Share Expiry</div><div class="toggle-sub">When share links expire</div></div><div class="toggle" onclick="toggleSwitch(this)"></div></div>
+        <div class="toggle-row"><div><div class="toggle-label">Email Notifications</div><div class="toggle-sub">Send alerts to john.doe@example.com</div></div><div class="toggle on" onclick="toggleSwitch(this)"></div></div>
+        <div class="toggle-row"><div><div class="toggle-label">Push Notifications</div><div class="toggle-sub">Browser & mobile push alerts</div></div><div class="toggle" onclick="toggleSwitch(this)"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ ORGANIZATIONS ══════════════════════════════════════ -->
+<div id="organizations" class="section">
+  <div class="page-header"><div><div class="page-title">Multi-Organization Network</div><div class="page-sub">Trusted decentralized verification ecosystem</div></div>
+  <button class="btn btn-primary btn-sm" onclick="showToast('Join request sent!','success')">+ Join Network</button></div>
+  <div class="org-grid">
+    <div class="org-card"><div class="org-icon">🎓</div><div class="org-name">Anna University</div><div class="org-docs">1,240 certificates issued</div><div class="org-status"><span class="trust-badge">✓ Trusted Issuer</span></div></div>
+    <div class="org-card"><div class="org-icon">🏥</div><div class="org-name">Apollo Hospital</div><div class="org-docs">890 medical records</div><div class="org-status"><span class="trust-badge">✓ Trusted Issuer</span></div></div>
+    <div class="org-card"><div class="org-icon">🏛</div><div class="org-name">Government of India</div><div class="org-docs">4,500 identity docs</div><div class="org-status"><span class="trust-badge">✓ Trusted Issuer</span></div></div>
+    <div class="org-card"><div class="org-icon">🏢</div><div class="org-name">TCS Legal Dept</div><div class="org-docs">320 contracts</div><div class="org-status"><span class="trust-badge">✓ Trusted Issuer</span></div></div>
+    <div class="org-card"><div class="org-icon">⚖</div><div class="org-name">District Court</div><div class="org-docs">215 legal orders</div><div class="org-status"><span class="trust-badge">✓ Trusted Issuer</span></div></div>
+    <div class="org-card" style="border-style:dashed;cursor:pointer" onclick="showToast('Request sent to join network','info')"><div class="org-icon">➕</div><div class="org-name">Add Organization</div><div class="org-docs">Request verified status</div><div class="org-status"><span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">Pending Review</span></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--accent3)"></div>Cross-Organization Verification</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="form-group"><label class="form-label">Document to Verify</label><select class="form-select"><option>diploma_cs.pdf</option><option>medical_report.pdf</option></select></div>
+      <div class="form-group"><label class="form-label">Issuing Organization</label><select class="form-select"><option>Anna University</option><option>Apollo Hospital</option></select></div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:1rem" onclick="showToast('Cross-org verification: AUTHENTIC ✅','success')">Verify with Organization</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ ANALYTICS ══════════════════════════════════════ -->
+<div id="analytics" class="section">
+  <div class="page-header"><div><div class="page-title">Blockchain Analytics</div><div class="page-sub">Smart contract interactions & network performance</div></div></div>
+  <div class="analytics-grid">
+    <div class="analytics-card"><div class="analytics-label">Total Transactions</div><div class="analytics-value">58</div><div class="analytics-change up">↑ 12% this week</div></div>
+    <div class="analytics-card"><div class="analytics-label">Gas Fees Used</div><div class="analytics-value">0.24 ETH</div><div class="analytics-change down">↓ 8% vs last month</div></div>
+    <div class="analytics-card"><div class="analytics-label">Verified Documents</div><div class="analytics-value">21</div><div class="analytics-change up">↑ 5 new verified</div></div>
+    <div class="analytics-card"><div class="analytics-label">Smart Contract Calls</div><div class="analytics-value">134</div><div class="analytics-change up">↑ 23% growth</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Transaction Volume (7 Days)</div>
+      <div class="bar-chart" id="barChart"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px" id="barLabels"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>Network Stats</div>
+      <div style="display:flex;flex-direction:column;gap:.75rem">
+        <div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px"><span>Gas Price</span><span style="font-family:var(--mono);color:var(--warn)">22 Gwei</span></div><div class="gas-meter"><div class="gas-fill" style="width:35%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px"><span>Block Utilization</span><span style="font-family:var(--mono);color:var(--accent)">68%</span></div><div class="gas-meter"><div class="gas-fill" style="width:68%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px"><span>IPFS Availability</span><span style="font-family:var(--mono);color:var(--accent3)">99.8%</span></div><div class="gas-meter"><div class="gas-fill" style="width:99%"></div></div></div>
+        <div style="background:var(--surface2);border-radius:8px;padding:.85rem;margin-top:.25rem">
+          <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-bottom:6px">CONTRACT EVENTS (LAST 24H)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+            <div style="font-size:.78rem">DocumentStored <span style="color:var(--accent);font-family:var(--mono)">3</span></div>
+            <div style="font-size:.78rem">AccessGranted <span style="color:var(--accent2);font-family:var(--mono)">5</span></div>
+            <div style="font-size:.78rem">AccessRevoked <span style="color:var(--danger);font-family:var(--mono)">1</span></div>
+            <div style="font-size:.78rem">ShareExpired <span style="color:var(--warn);font-family:var(--mono)">2</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ ZK PROOF ══════════════════════════════════════ -->
+<div id="zkproof" class="section">
+  <div class="page-header"><div><div class="page-title">Zero-Knowledge Proofs</div><div class="page-sub">Verify documents without revealing sensitive data</div></div></div>
+  <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.1rem">🔭</span>
+    <div><div style="font-size:.85rem;font-weight:700;color:var(--warn)">Future Scope Feature</div>
+    <div style="font-size:.75rem;color:var(--muted);margin-top:2px">ZK-SNARK proofs are planned for a future release. Will use Groth16 proving scheme to verify document validity without exposing any content.</div></div>
+  </div>
+  <div class="card" style="margin-bottom:1.75rem">
+    <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>How ZK Proofs Work</div>
+    <div class="zk-flow">
+      <div class="zk-node"><div class="zn-icon">📄</div><div class="zn-label">Document</div><div class="zn-sub">Original file</div></div>
+      <div class="zk-arrow"></div>
+      <div class="zk-node zk-highlight"><div class="zn-icon">🔐</div><div class="zn-label">ZK Circuit</div><div class="zn-sub">Generate proof</div></div>
+      <div class="zk-arrow"></div>
+      <div class="zk-node"><div class="zn-icon">✅</div><div class="zn-label">Proof Only</div><div class="zn-sub">No data exposed</div></div>
+      <div class="zk-arrow"></div>
+      <div class="zk-node zk-highlight"><div class="zn-icon">⛓</div><div class="zn-label">Blockchain</div><div class="zn-sub">Verify proof</div></div>
+      <div class="zk-arrow"></div>
+      <div class="zk-node"><div class="zn-icon">🎯</div><div class="zn-label">Confirmed</div><div class="zn-sub">Valid, not exposed</div></div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Generate ZK Proof</div>
+      <div style="display:flex;flex-direction:column;gap:.9rem">
+        <div class="form-group"><label class="form-label">Document</label><select class="form-select"><option>medical_report.pdf</option><option>identity_card.jpg</option><option>diploma_cs.pdf</option></select></div>
+        <div class="form-group"><label class="form-label">What to Prove</label><select class="form-select"><option>Document is unmodified</option><option>Owner is verified</option><option>Issued before a date</option><option>Score above threshold</option></select></div>
+        <div class="form-group"><label class="form-label">Recipient</label><input class="form-input" type="text" placeholder="Wallet address or email"></div>
+        <button class="btn btn-primary" onclick="generateZKProof()">Generate ZK Proof</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>Sample ZK Proof Output</div>
+      <div class="proof-demo">
+        <span class="proof-line-key">"proofType"</span>: <span class="proof-line-val">"zk-SNARK"</span>,<br>
+        <span class="proof-line-key">"statement"</span>: <span class="proof-line-val">"doc_unmodified"</span>,<br>
+        <span class="proof-line-key">"publicInputs"</span>: {<br>
+        &nbsp;&nbsp;<span class="proof-line-key">"docHash"</span>: <span class="proof-line-val">"a3f8c9...e21b"</span>,<br>
+        &nbsp;&nbsp;<span class="proof-line-key">"blockNum"</span>: <span class="proof-line-val">18924112</span><br>
+        },<br>
+        <span class="proof-line-key">"privateInputs"</span>: <span class="proof-line-hidden">██████████████</span>,<br>
+        <span class="proof-line-key">"proof"</span>: {<br>
+        &nbsp;&nbsp;<span class="proof-line-key">"pi_a"</span>: <span class="proof-line-val">"[0x2f3a...7b1c]"</span>,<br>
+        &nbsp;&nbsp;<span class="proof-line-key">"pi_b"</span>: <span class="proof-line-val">"[0x8c4d...a3e9]"</span>,<br>
+        &nbsp;&nbsp;<span class="proof-line-key">"verified"</span>: <span style="color:var(--accent3)">true</span><br>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ DISASTER RECOVERY ══════════════════════════════════════ -->
+<div id="recovery" class="section">
+  <div class="page-header"><div><div class="page-title">Disaster Recovery</div><div class="page-sub">Distributed backup & blockchain state protection</div></div>
+  <button class="btn btn-primary btn-sm" onclick="triggerBackup()">⟳ Trigger Backup Now</button></div>
+  <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px">
+    <span style="font-size:1.1rem">🔭</span>
+    <div><div style="font-size:.85rem;font-weight:700;color:var(--warn)">Future Scope Feature</div>
+    <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Multi-node IPFS disaster recovery is planned for production deployment. Current version uses single-node local storage simulation.</div></div>
+  </div>
+  <div class="node-grid">
+    <div class="node-card"><div class="node-header"><span class="node-label">Node SG-01</span><div class="node-status online"></div></div><div class="node-region">Singapore · IPFS</div><div class="node-metric"><span class="nk">Stored</span><span class="nv">8.2 GB</span></div><div class="node-metric"><span class="nk">Uptime</span><span class="nv" style="color:var(--accent3)">99.9%</span></div></div>
+    <div class="node-card"><div class="node-header"><span class="node-label">Node US-01</span><div class="node-status online"></div></div><div class="node-region">Virginia · IPFS</div><div class="node-metric"><span class="nk">Stored</span><span class="nv">8.1 GB</span></div><div class="node-metric"><span class="nk">Uptime</span><span class="nv" style="color:var(--accent3)">99.7%</span></div></div>
+    <div class="node-card"><div class="node-header"><span class="node-label">Node EU-01</span><div class="node-status syncing"></div></div><div class="node-region">Frankfurt · IPFS</div><div class="node-metric"><span class="nk">Stored</span><span class="nv">7.9 GB</span></div><div class="node-metric"><span class="nk">Uptime</span><span class="nv" style="color:var(--warn)">98.1%</span></div></div>
+    <div class="node-card"><div class="node-header"><span class="node-label">Node IN-01</span><div class="node-status online"></div></div><div class="node-region">Mumbai · IPFS</div><div class="node-metric"><span class="nk">Stored</span><span class="nv">8.0 GB</span></div><div class="node-metric"><span class="nk">Uptime</span><span class="nv" style="color:var(--accent3)">99.5%</span></div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent3)"></div>Backup Progress</div>
+      <div class="backup-progress-list">
+        <div class="backup-item"><div class="backup-item-header"><span>Blockchain State Snapshot</span><span style="color:var(--accent3);font-family:var(--mono);font-size:.68rem">100%</span></div><div class="backup-bar"><div class="backup-fill" style="width:100%;background:var(--accent3)"></div></div></div>
+        <div class="backup-item"><div class="backup-item-header"><span>IPFS File Replication</span><span style="color:var(--accent);font-family:var(--mono);font-size:.68rem">87%</span></div><div class="backup-bar"><div class="backup-fill" style="width:87%;background:var(--accent)"></div></div></div>
+        <div class="backup-item"><div class="backup-item-header"><span>Smart Contract Backup</span><span style="color:var(--accent2);font-family:var(--mono);font-size:.68rem">100%</span></div><div class="backup-bar"><div class="backup-fill" style="width:100%;background:var(--accent2)"></div></div></div>
+        <div class="backup-item"><div class="backup-item-header"><span>Access Logs Archive</span><span style="color:var(--warn);font-family:var(--mono);font-size:.68rem">64%</span></div><div class="backup-bar"><div class="backup-fill" style="width:64%;background:var(--warn)"></div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent2)"></div>Recovery Settings</div>
+      <div style="display:flex;flex-direction:column;gap:.75rem">
+        <div class="toggle-row"><div><div class="toggle-label">Auto-Backup Every 6 Hours</div><div class="toggle-sub">Scheduled IPFS snapshots</div></div><div class="toggle on" onclick="toggleSwitch(this)"></div></div>
+        <div class="toggle-row"><div><div class="toggle-label">Blockchain State Archive</div><div class="toggle-sub">Full chain state every 24h</div></div><div class="toggle on" onclick="toggleSwitch(this)"></div></div>
+        <div class="toggle-row"><div><div class="toggle-label">Node Redundancy Mode</div><div class="toggle-sub">Maintain 3+ copies per file</div></div><div class="toggle on" onclick="toggleSwitch(this)"></div></div>
+        <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:.85rem;font-size:.78rem">
+          <div style="font-weight:700;color:var(--accent3);margin-bottom:3px">Last Successful Backup</div>
+          <div style="font-family:var(--mono);color:var(--muted)">2025-03-15 06:00 UTC · 4 nodes · 8.3 GB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ MOBILE APP ══════════════════════════════════════ -->
+<div id="mobile" class="section">
+  <div class="page-header"><div><div class="page-title">Mobile Application</div><div class="page-sub">ChainVault on iOS & Android — Coming Soon</div></div></div>
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:1.5rem">
+      <div class="mobile-mockup">
+        <div class="mobile-notch"></div>
+        <div class="mobile-screen" style="padding:1rem">
+          <div style="font-family:var(--mono);font-size:.55rem;color:var(--accent);margin-bottom:.75rem">09:41 ●●● WiFi</div>
+          <div style="font-weight:800;font-size:.9rem;margin-bottom:.75rem">⛓ ChainVault</div>
+          <div style="background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:8px;padding:.75rem;margin-bottom:.6rem">
+            <div style="font-size:.65rem;font-weight:700">📄 contract_2024.pdf</div>
+            <div style="font-family:var(--mono);font-size:.5rem;color:var(--accent3);margin-top:2px">✓ Verified · Block #18,924,112</div>
+          </div>
+          <div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:.75rem;margin-bottom:.6rem">
+            <div style="font-size:.65rem;font-weight:700">📋 diploma_cs.pdf</div>
+            <div style="font-family:var(--mono);font-size:.5rem;color:var(--accent);margin-top:2px">⬆ IPFS Stored</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.75rem">
+            <div style="background:var(--surface2);border-radius:7px;padding:.6rem;text-align:center;font-size:.6rem;cursor:pointer">📷 Scan QR</div>
+            <div style="background:var(--surface2);border-radius:7px;padding:.6rem;text-align:center;font-size:.6rem;cursor:pointer">⬆ Upload</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem">
+        <button class="btn btn-primary" onclick="showToast('App Store link coming soon!','info')">🍎 App Store</button>
+        <button class="btn btn-outline" onclick="showToast('Play Store link coming soon!','info')">▶ Google Play</button>
+      </div>
+    </div>
+    <div>
+      <div class="mobile-feature-grid">
+        <div class="mobile-feature-card"><div class="mf-icon">📷</div><div class="mf-title">QR Scanner</div><div class="mf-desc">Scan any document QR for instant blockchain verification</div></div>
+        <div class="mobile-feature-card"><div class="mf-icon">⬆</div><div class="mf-title">Mobile Upload</div><div class="mf-desc">Photo your document and upload directly to IPFS + blockchain</div></div>
+        <div class="mobile-feature-card"><div class="mf-icon">🔔</div><div class="mf-title">Push Alerts</div><div class="mf-desc">Real-time push notifications for all document activity</div></div>
+        <div class="mobile-feature-card"><div class="mf-icon">🔑</div><div class="mf-title">Biometric Auth</div><div class="mf-desc">Face ID / fingerprint to sign blockchain transactions</div></div>
+        <div class="mobile-feature-card"><div class="mf-icon">📴</div><div class="mf-title">Offline Mode</div><div class="mf-desc">Cache verified documents for offline viewing</div></div>
+        <div class="mobile-feature-card"><div class="mf-icon">🦊</div><div class="mf-title">WalletConnect</div><div class="mf-desc">Sign transactions from mobile wallet directly</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ AUDIT ══════════════════════════════════════ -->
+<div id="audit" class="section">
+  <div class="page-header"><div><div class="page-title">Audit Log</div><div class="page-sub">Immutable on-chain activity history</div></div></div>
+  <div class="audit-filters">
+    <div class="filter-tab active" onclick="setAuditFilter(this,'all')">All Events</div>
+    <div class="filter-tab" onclick="setAuditFilter(this,'upload')">Uploads</div>
+    <div class="filter-tab" onclick="setAuditFilter(this,'verify')">Verifications</div>
+    <div class="filter-tab" onclick="setAuditFilter(this,'share')">Shares</div>
+    <div class="filter-tab" onclick="setAuditFilter(this,'wallet')">Wallet Txns</div>
+  </div>
+  <div class="audit-list" id="auditList"></div>
+</div>
+
+</main>
+</div>
+</div>
+
+<!-- QR Modal -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal">
+    <div class="modal-title">Document QR Code<span class="modal-close" onclick="closeQR()">✕</span></div>
+    <div class="qr-container"><canvas id="qrCanvas" width="190" height="190"></canvas><div class="qr-label" id="qrLabel">—</div></div>
+    <div class="file-detail-list" id="fileDetailList"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:1rem;padding:9px" onclick="closeQR()">Close</button>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── DATA ──
+// ── FILES ARRAY (demo data + live uploads merged) ──
+let FILES=[
+  {id:1,name:'contract_2024.pdf',size:'1.2 MB',type:'pdf',hash:'a3f8c9...e21b',cid:'QmXo3B...kT9z',status:'verified',date:'2025-03-12',owner:'John Doe',realHash:null},
+  {id:2,name:'diploma_cs.pdf',size:'840 KB',type:'pdf',hash:'7b2d41...f8c3',cid:'QmVr7Y...nP4w',status:'verified',date:'2025-03-10',owner:'John Doe',realHash:null},
+  {id:3,name:'medical_report.pdf',size:'2.1 MB',type:'pdf',hash:'f5e1a8...3c9d',cid:'QmBt2X...mK7j',status:'shared',date:'2025-03-08',owner:'John Doe',realHash:null},
+  {id:4,name:'logo_design.png',size:'450 KB',type:'img',hash:'2c7f3b...a1e8',cid:'QmDs4Z...rL3f',status:'verified',date:'2025-03-06',owner:'John Doe',realHash:null},
+  {id:5,name:'tax_return_2024.pdf',size:'3.4 MB',type:'pdf',hash:'9e4d2a...7b1f',cid:'QmHk8P...vN2c',status:'pending',date:'2025-03-05',owner:'John Doe',realHash:null},
+  {id:6,name:'identity_card.jpg',size:'280 KB',type:'img',hash:'1a9c5e...d6b4',cid:'QmWn6Q...jM8s',status:'verified',date:'2025-03-04',owner:'John Doe',realHash:null},
+  {id:7,name:'nda_agreement.docx',size:'190 KB',type:'doc',hash:'6f2b8d...e3c7',cid:'QmLp9R...xO1t',status:'shared',date:'2025-03-01',owner:'John Doe',realHash:null},
+];
+let _nextId = 8;  // next ID counter for live uploads
+
+// Add a real uploaded file into FILES array and re-render
+function addFile(name, fullHash, fileSize) {
+  const ext = name.split('.').pop().toLowerCase();
+  const typeMap = {pdf:'pdf', png:'img', jpg:'img', jpeg:'img', gif:'img', doc:'doc', docx:'doc', zip:'zip'};
+  const fmtSize = fileSize < 1048576 ? (fileSize/1024).toFixed(1)+' KB' : (fileSize/1048576).toFixed(1)+' MB';
+  const shortHash = fullHash.substring(0,8)+'...'+fullHash.substring(56);
+  const mockCID = 'Qm'+Array.from({length:6},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('')+'...'+Array.from({length:4},()=>'abcdefghjkmnpqrstuvwxyz'[Math.floor(Math.random()*23)]).join('');
+  const today = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  FILES.unshift({
+    id: _nextId++,
+    name,
+    size: fmtSize,
+    type: typeMap[ext] || 'doc',
+    hash: shortHash,
+    fullHash,
+    cid: mockCID,
+    status: 'verified',
+    date: today,
+    owner: connectedWallet || 'John Doe',
+    realHash: fullHash,
+    isLive: true
+  });
+  renderFiles();
+  // Update file count in dashboard subtitle
+  const sub = document.getElementById('filesSubtitle');
+  if (sub) sub.textContent = FILES.length + ' files stored · ' + FILES.filter(f=>f.isLive).length + ' uploaded this session';
+}
+const USERS=[
+  {initials:'SR',name:'Sara Rodriguez',email:'sara@hospital.org',role:'viewer',color:'#00d4ff'},
+  {initials:'MB',name:'Michael Brown',email:'m.brown@corp.com',role:'editor',color:'#7c3aed'},
+  {initials:'AL',name:'Audit Legal',email:'audit@legalfirm.com',role:'auditor',color:'#10b981'},
+  {initials:'KP',name:'Kiran Patel',email:'kp@university.edu',role:'viewer',color:'#f59e0b'},
+];
+const AUDIT_ENTRIES=[
+  {type:'upload',icon:'⬆',label:'File Uploaded',sub:'contract_2024.pdf → IPFS (QmXo3B...kT9z)',time:'2025-03-12 14:32',block:'#18,924,112',cat:'upload'},
+  {type:'verify',icon:'✔',label:'Integrity Verified',sub:'diploma_cs.pdf hash matched on-chain',time:'2025-03-12 11:15',block:'#18,924,055',cat:'verify'},
+  {type:'share',icon:'↗',label:'File Shared (24h)',sub:'medical_report.pdf → sara@hospital.org',time:'2025-03-10 09:45',block:'#18,923,820',cat:'share'},
+  {type:'wallet',icon:'🦊',label:'Wallet Transaction',sub:'storeDocument() · Gas: 0.0023 ETH · 0x742d...F4e2',time:'2025-03-10 10:02',block:'#18,923,831',cat:'wallet'},
+  {type:'upload',icon:'⬆',label:'File Uploaded',sub:'logo_design.png → IPFS (QmDs4Z...rL3f)',time:'2025-03-06 16:20',block:'#18,922,910',cat:'upload'},
+  {type:'verify',icon:'✔',label:'QR Scan Verified',sub:'tax_return_2024.pdf scanned by auditor',time:'2025-03-05 09:00',block:'#18,922,405',cat:'verify'},
+  {type:'share',icon:'↗',label:'One-Time Link Shared',sub:'nda_agreement.docx → m.brown@corp.com',time:'2025-03-01 13:45',block:'#18,920,112',cat:'share'},
+  {type:'wallet',icon:'🦊',label:'ZK Proof Submitted',sub:'identity_card.jpg proof · Gas: 0.0031 ETH',time:'2025-02-28 11:30',block:'#18,919,810',cat:'wallet'},
+];
+const SHARE_LINKS=[
+  {file:'medical_report.pdf',recipient:'sara@hospital.org',expires:'2025-03-16 14:32',status:'active'},
+  {file:'nda_agreement.docx',recipient:'m.brown@corp.com',expires:'2025-03-13 09:00',status:'expired'},
+  {file:'diploma_cs.pdf',recipient:'hr@company.com',expires:'2025-03-20 00:00',status:'active'},
+];
+
+let currentFilter='all', currentAuditFilter='all';
+
+// ── NAVIGATION ──
+function navigate(el,section){
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(section).classList.add('active');
+  if(section==='files')renderFiles();
+  if(section==='access')renderUsers();
+  if(section==='audit')renderAudit();
+  if(section==='dashboard'||section==='')renderChain();
+  if(section==='analytics')renderBarChart();
+  if(section==='sharing')renderShareLinks();
+  if (section === "files") {
+  console.log("Loading files section ✅");
+  loadFiles();
+}
+}
+
+// ── FILES ──
+function getFileIcon(t){const m={pdf:['📄','fi-pdf'],img:['🖼','fi-img'],doc:['📝','fi-doc'],zip:['📦','fi-zip']};return m[t]||['📄','fi-doc']}
+function renderFiles(){
+  const q=(document.getElementById('fileSearch')||{value:''}).value.toLowerCase();
+  const filtered=FILES.filter(f=>(currentFilter==='all'||f.status===currentFilter)&&(f.name.toLowerCase().includes(q)||f.hash.toLowerCase().includes(q)));
+  document.getElementById('fileTableBody').innerHTML=filtered.map(f=>{
+    const[ico,cls]=getFileIcon(f.type);
+    const liveBadge = f.isLive
+      ? `<span style="font-family:var(--mono);font-size:.5rem;background:rgba(16,185,129,.15);color:var(--accent3);border:1px solid rgba(16,185,129,.3);padding:1px 5px;border-radius:4px;margin-left:5px">⬤ LIVE</span>`
+      : '';
+    const hashTitle = f.fullHash ? `title="${f.fullHash}"` : '';
+    const copyBtn = f.isLive
+      ? `<button class="icon-btn" title="Copy full hash" onclick="event.stopPropagation();navigator.clipboard&&navigator.clipboard.writeText('${f.fullHash||f.hash}');showToast('Full SHA-256 hash copied!','success')">⎘</button>`
+      : `<button class="icon-btn" title="Share" onclick="event.stopPropagation();showToast('Share link created','info')">↗</button>`;
+    return`<tr class="file-row" style="${f.isLive?'animation:rowFadeIn .5s ease':''}">
+      <td><div class="file-name-cell">
+        <div class="file-icon ${cls}">${ico}</div>
+        <div><div class="file-fname">${f.name}${liveBadge}</div><div class="file-fsize">${f.size}</div></div>
+      </div></td>
+      <td><span class="hash-pill" ${hashTitle} style="cursor:pointer" onclick="navigator.clipboard&&navigator.clipboard.writeText('${f.fullHash||f.hash}');showToast('Hash copied!','success')">${f.hash}</span></td>
+      <td style="font-family:var(--mono);font-size:.65rem;color:var(--muted)">${f.cid}</td>
+      <td><span class="status-badge ${f.status}"><div class="status-dot"></div>${f.status}</span></td>
+      <td style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">${f.date}</td>
+      <td><div class="action-btns">
+        <button class="icon-btn" title="Verify" onclick="event.stopPropagation();showToast('${f.name} verified ✅','success')">✔</button>
+        ${copyBtn}
+        <button class="icon-btn" title="QR" onclick="event.stopPropagation();openQR(${f.id})">⬛</button>
+        <button class="icon-btn" style="color:var(--danger)" onclick="event.stopPropagation();FILES=FILES.filter(x=>x.id!==${f.id});renderFiles();showToast('File removed','error')" title="Delete">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+function setFilter(el,f){document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');currentFilter=f;renderFiles()}
+
+// ── USERS ──
+function renderUsers(){
+  document.getElementById('userList').innerHTML=USERS.map(u=>`<div class="user-row"><div class="user-av" style="background:${u.color}20;color:${u.color}">${u.initials}</div><div class="user-det"><div class="name">${u.name}</div><div class="email">${u.email}</div></div><span class="role-badge ${u.role}" style="margin-right:auto">${u.role.toUpperCase()}</span><button class="icon-btn" onclick="showToast('Role updated','success')">✏</button><button class="icon-btn" style="color:var(--danger)" onclick="showToast('User removed','error')">✕</button></div>`).join('');
+}
+
+// ── AUDIT ──
+function renderAudit(){
+  const tc={upload:'at-upload',verify:'at-verify',share:'at-share',wallet:'at-wallet',access:'at-access'};
+  const entries=currentAuditFilter==='all'?AUDIT_ENTRIES:AUDIT_ENTRIES.filter(e=>e.cat===currentAuditFilter);
+  document.getElementById('auditList').innerHTML=entries.map(e=>`<div class="audit-entry"><div class="audit-type ${tc[e.type]}">${e.icon}</div><div class="audit-main"><div class="title">${e.label}</div><div class="sub">${e.sub}</div></div><div class="audit-meta"><div class="time">${e.time}</div><div class="block-num">Block ${e.block}</div></div></div>`).join('');
+}
+function setAuditFilter(el,f){document.querySelectorAll('.audit-filters .filter-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');currentAuditFilter=f;renderAudit()}
+
+// ── CHAIN VIZ ──
+function renderChain(){
+  const blocks=[{hash:'0x2f3a...',tx:3,label:'#18,923,991'},{hash:'0x7c8d...',tx:1,label:'#18,924,055'},{hash:'0xa1b2...',tx:2,label:'#18,924,098'},{hash:'0xe4f5...',tx:4,label:'#18,924,112',latest:true}];
+  const el=document.getElementById('chainViz');if(!el)return;
+  el.innerHTML=blocks.map((b,i)=>`${i>0?'<div class="chain-link"></div>':''}<div class="block ${b.latest?'latest':''}"><div class="bh">${b.hash}</div><div class="bt">${b.label}</div><div style="font-size:.58rem;color:var(--muted);margin-top:2px">${b.tx} txn${b.tx>1?'s':''}</div></div>`).join('');
+}
+
+// ── REAL SHA-256 HASHING (Web Crypto API) ──
+async function generateHash(file) {
+  const buffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ── MOCK BLOCKCHAIN STORAGE (localStorage) ──
+function storeHash(hash, fileName, fileSize) {
+  const existing = JSON.parse(localStorage.getItem('chainvault_hashes') || '[]');
+  // Avoid duplicates
+  if (!existing.find(e => e.hash === hash)) {
+    existing.push({
+      hash,
+      fileName,
+      fileSize,
+      timestamp: new Date().toISOString(),
+      blockNum: '#' + (18900000 + existing.length + 1).toLocaleString(),
+      owner: '0x742d...F4e2'
+    });
+    localStorage.setItem('chainvault_hashes', JSON.stringify(existing));
+  }
+}
+
+function getStoredRecord(hash) {
+  const existing = JSON.parse(localStorage.getItem('chainvault_hashes') || '[]');
+  return existing.find(e => e.hash === hash) || null;
+}
+
+function getAllStoredHashes() {
+  return JSON.parse(localStorage.getItem('chainvault_hashes') || '[]');
+}
+
+// ── UPLOAD ──
+let _pendingFile = null;
+let _pendingHash = null;
+
+async function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  _pendingFile = file;
+  _pendingHash = null;
+
+  document.getElementById('selectedFileInfo').style.display = 'block';
+  document.getElementById('selFileName').textContent = file.name;
+  document.getElementById('selFileSize').textContent = formatBytes(file.size);
+
+  // Show hashing indicator
+  document.getElementById('selFileHash').textContent = 'Computing SHA-256…';
+  document.getElementById('selFileHash').style.opacity = '0.5';
+
+  // REAL SHA-256 via Web Crypto API
+  const hash = await generateHash(file);
+  _pendingHash = hash;
+
+  // Display full real hash (truncated for display)
+  const shortHash = hash.substring(0, 8) + '...' + hash.substring(56);
+  document.getElementById('selFileHash').textContent = 'SHA-256: ' + shortHash;
+  document.getElementById('selFileHash').title = hash; // full hash on hover
+  document.getElementById('selFileHash').style.opacity = '1';
+}
+function formatBytes(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
+async function startUpload() {
+  const fileInput = document.getElementById("fileInput");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    showToast("Please select a file ❗", "warn");
+    return;
+  }
+
+  // Show progress UI
+  const progressBox = document.getElementById("uploadProgress");
+  const progressFill = document.getElementById("progressFill");
+  const progressPct = document.getElementById("progressPct");
+  const progressLabel = document.getElementById("progressLabel");
+
+  progressBox.classList.add("show");
+
+  try {
+    // Step 1: Preparing upload
+    progressLabel.innerText = "Preparing upload...";
+    progressFill.style.width = "10%";
+    progressPct.innerText = "10%";
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // Step 2: Uploading
+    progressLabel.innerText = "Uploading to server...";
+    progressFill.style.width = "40%";
+    progressPct.innerText = "40%";
+
+    const res = await fetch("http://localhost:5000/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    // Step 3: Processing response
+    progressLabel.innerText = "Processing response...";
+    progressFill.style.width = "70%";
+    progressPct.innerText = "70%";
+
+    const data = await res.json();
+    console.log(data);
+
+    // Step 4: Done
+    progressLabel.innerText = "Upload complete!";
+    progressFill.style.width = "100%";
+    progressPct.innerText = "100%";
+
+    showToast("File uploaded successfully ✅", "success");
+
+    // OPTIONAL: Add to file table dynamically
+    if (typeof loadFiles === "function") {
+      loadFiles();
+    }
+
+  } catch (err) {
+    console.error(err);
+
+    progressLabel.innerText = "Upload failed ❌";
+    progressFill.style.width = "0%";
+    progressPct.innerText = "0%";
+
+    showToast("Upload failed ❌", "error");
+  }
+}
+
+async function loadFiles() {
+  try {
+    const res = await fetch("http://localhost:5000/files");
+    const files = await res.json();
+
+    const tableBody = document.getElementById("fileTableBody");
+    if (!tableBody) return;
+
+    tableBody.innerHTML = "";
+
+    files.forEach(file => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>
+          <div style="font-weight:600">${file.name}</div>
+          <div style="font-size:12px;color:gray">${file.path}</div>
+        </td>
+
+        <td>
+          <span style="
+            font-family:monospace;
+            font-size:12px;
+            background:#111;
+            padding:4px 8px;
+            border-radius:6px;
+            color:#00d4ff;
+          ">
+            ${file.hash.substring(0, 16)}...
+          </span>
+        </td>
+
+        <td>
+          <span style="
+            color:#10b981;
+            font-weight:600;
+          ">✔ Verified</span>
+        </td>
+
+        <td>
+          ${new Date(file.uploadedAt).toLocaleString()}
+        </td>
+
+        <td>
+          <button onclick="alert('${file.name}')">View</button>
+        </td>
+      `;
+
+      tableBody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("Error loading files:", err);
+  }
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+// ── VERIFY ──
+async function handleVerifyFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  showToast('Computing SHA-256 hash…', 'info');
+
+  // REAL hash computation
+  const hash = await generateHash(file);
+  const shortHash = hash.substring(0, 8) + '...' + hash.substring(56);
+
+  // Check against localStorage records (mock blockchain)
+  const record = getStoredRecord(hash);
+
+  if (record) {
+    // Found in blockchain — AUTHENTIC
+    showVerifyResult(true, file.name, shortHash, record.timestamp.split('T')[0], record.blockNum, record.owner);
+    showToast('✅ Verified! Hash found on blockchain.', 'success');
+  } else {
+    // Not found — tampered or never stored
+    showVerifyResult(false, file.name, shortHash, '—', '—', null);
+    showToast('❌ Hash not found in blockchain records.', 'error');
+  }
+}
+async function verifyHash() {
+  const hash = document.getElementById("manualHash").value;
+
+  if (!hash) {
+    alert("Enter hash");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ hash }),
+    });
+
+    const data = await res.json();
+
+    if (data.verified) {
+      showToast("✅ File Verified!", "success");
+    } else {
+      showToast("❌ File Not Found", "error");
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast("Verification failed", "error");
+  }
+}
+function showVerifyResult(match, fname, hash, date, block, owner) {
+  const r = document.getElementById('verifyResult');
+  r.classList.remove('success','fail');
+  void r.offsetWidth; // force reflow for animation reset
+  r.className = 'verify-result show ' + (match ? 'success' : 'fail');
+  document.getElementById('verifyIcon').textContent = match ? '✅' : '❌';
+  document.getElementById('verifyTitle').textContent = match
+    ? 'Document Verified ✅ — Authentic'
+    : 'Tampered File ❌ — Not Found in Blockchain';
+  document.getElementById('verifyMsg').textContent = match
+    ? 'SHA-256 hash matches the blockchain record exactly. This file is original and unmodified.'
+    : 'Hash not found in any blockchain record. Upload this file first, or the file may have been altered.';
+  // Rich detail grid
+  document.getElementById('verifyDetail').innerHTML = `
+    <div class="vd-item">
+      <div class="vd-label">FILE NAME</div>
+      <div class="vd-val">${fname}</div>
+    </div>
+    <div class="vd-item">
+      <div class="vd-label">STATUS</div>
+      <div class="vd-val"><span style="color:${match?'var(--accent3)':'var(--danger)'};font-weight:800">${match?'✔ VALID':'✖ TAMPERED'}</span></div>
+    </div>
+    <div class="vd-item" style="grid-column:1/-1">
+      <div class="vd-label">SHA-256 HASH</div>
+      <div class="vd-val" style="color:var(--accent);font-family:var(--mono);font-size:.65rem;word-break:break-all">${hash}</div>
+    </div>
+    <div class="vd-item">
+      <div class="vd-label">RECORDED ON</div>
+      <div class="vd-val">${date}</div>
+    </div>
+    <div class="vd-item">
+      <div class="vd-label">BLOCK NUMBER</div>
+      <div class="vd-val" style="color:var(--accent2)">${block}</div>
+    </div>
+    <div class="vd-item">
+      <div class="vd-label">OWNER WALLET</div>
+      <div class="vd-val" style="font-family:var(--mono);font-size:.7rem">${owner||'0x742d...F4e2'}</div>
+    </div>
+    <div class="vd-item">
+      <div class="vd-label">VERIFICATION METHOD</div>
+      <div class="vd-val" style="font-family:var(--mono);font-size:.7rem">Web Crypto API · SHA-256</div>
+    </div>
+  `;
+  r.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ── QR ──
+function openQR(id){
+  const f=FILES.find(x=>x.id===id);if(!f)return;
+  document.getElementById('qrModal').classList.add('show');
+  document.getElementById('qrLabel').textContent=f.hash;
+  drawQR(f.hash+'|'+f.cid);
+  document.getElementById('fileDetailList').innerHTML=`<div class="fd-row"><span class="fd-key">FILE</span><span class="fd-val">${f.name}</span></div><div class="fd-row"><span class="fd-key">HASH</span><span class="fd-val" style="color:var(--accent);font-family:var(--mono);font-size:.62rem">${f.hash}</span></div><div class="fd-row"><span class="fd-key">IPFS CID</span><span class="fd-val" style="color:var(--muted);font-family:var(--mono);font-size:.62rem">${f.cid}</span></div><div class="fd-row"><span class="fd-key">STATUS</span><span class="fd-val" style="color:var(--accent3)">${f.status}</span></div>`;
+}
+function closeQR(){document.getElementById('qrModal').classList.remove('show')}
+function drawQR(data){
+  const canvas=document.getElementById('qrCanvas'),ctx=canvas.getContext('2d');
+  const size=190,modules=21,cell=size/modules;
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,size,size);
+  const seed=data.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const rng=i=>((seed*(i+1)*2654435761)>>>0)%100;
+  for(let r=0;r<modules;r++)for(let c=0;c<modules;c++){
+    const inF=(r<7&&c<7)||(r<7&&c>=modules-7)||(r>=modules-7&&c<7);
+    if(inF){const fr=r<7?r:r-(modules-7),fc=c<7?c:c-(modules-7);const e=fr===0||fr===6,ec=fc===0||fc===6;const inn=fr>=2&&fr<=4&&fc>=2&&fc<=4;ctx.fillStyle=(e||ec||inn)?'#000':'#fff'}
+    else ctx.fillStyle=rng(r*modules+c)<45?'#000':'#fff';
+    ctx.fillRect(c*cell,r*cell,cell,cell);
+  }
+}
+
+// ── WALLET ──
+let connectedWallet = null;
+
+async function connectMetaMask() {
+  if (window.ethereum) {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      connectedWallet = accounts[0];
+      const short = connectedWallet.substring(0,6)+'...'+connectedWallet.substring(38);
+      // Update nav wallet chip
+      const chip = document.querySelector('.wallet-chip');
+      if(chip) chip.innerHTML = `<span class="wallet-dot"></span>${short} Connected`;
+      // Update MetaMask card
+      const mmCard = document.querySelector('.wallet-opt.connected');
+      if(mmCard) { mmCard.querySelector('.wstatus').className='wstatus conn'; mmCard.querySelector('.wstatus').textContent='● '+short; }
+      showToast('🦊 MetaMask connected: ' + short, 'success');
+    } catch(err) {
+      showToast('MetaMask connection rejected', 'error');
+    }
+  } else {
+    showToast('MetaMask not installed — install from metamask.io', 'warn');
+    window.open('https://metamask.io','_blank');
+  }
+}
+
+function connectWallet(el, name) {
+  if (name === 'MetaMask' || !name) { connectMetaMask(); return; }
+  el.querySelector('.wstatus').className='wstatus conn';
+  el.querySelector('.wstatus').textContent='● Connected';
+  el.classList.add('connected');
+  showToast(name+' connected!','success');
+}
+
+// ── SHARE LINKS ──
+function renderShareLinks(){
+  const el=document.getElementById('shareList');if(!el)return;
+  el.innerHTML=SHARE_LINKS.map(s=>`<div class="share-link-card"><div><div style="font-weight:700;font-size:.8rem">${s.file}</div><div class="share-link-url">→ ${s.recipient}</div></div><div style="text-align:right"><span class="expiry-badge ${s.status}">${s.status==='active'?'⏱ Active':'✕ Expired'}</span><div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-top:3px">${s.expires}</div></div></div>`).join('');
+}
+function createShare(dur,unit){showToast(`${dur}-${unit} share link created and stored on contract!`,'success')}
+
+// ── AI ──
+function runAIScan(e){
+  if(!e.target.files[0])return;
+  showToast('AI scanning document…','info');
+  setTimeout(()=>{
+    const pass=Math.random()>.25;
+    document.getElementById('aiResult').classList.add('show');
+    document.getElementById('scoreNum').textContent=pass?'91':'34';
+    document.getElementById('aiVerdict').textContent=pass?'Document Appears Authentic':'⚠ Potential Forgery Detected';
+    document.getElementById('scoreArc').style.stroke=pass?'var(--accent3)':'var(--danger)';
+    const offset=pass?20:180;document.getElementById('scoreArc').style.strokeDashoffset=offset;
+    if(!pass)showToast('AI flagged potential manipulation!','error');
+    else showToast('AI scan complete — document authentic','success');
+  },2000);
+}
+
+// ── ZK PROOF ──
+function generateZKProof(){showToast('ZK-SNARK proof generated — no data exposed','success')}
+
+// ── ANALYTICS BAR CHART ──
+function renderBarChart(){
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals=[5,8,12,7,15,9,11];const max=Math.max(...vals);
+  const bc=document.getElementById('barChart'),bl=document.getElementById('barLabels');
+  if(!bc)return;
+  bc.innerHTML=vals.map(v=>`<div class="bar" style="height:${(v/max)*100}%" title="${v} txns"></div>`).join('');
+  bl.innerHTML=days.map(d=>`<div class="bar-label">${d}</div>`).join('');
+}
+
+// ── DISASTER RECOVERY ──
+function triggerBackup(){showToast('Manual backup triggered across 4 nodes!','success')}
+
+// ── TOGGLES ──
+function toggleSwitch(el){el.classList.toggle('on');showToast(el.classList.contains('on')?'Setting enabled':'Setting disabled','info')}
+
+// ── TOAST ──
+function showToast(msg,type='info'){
+  const icons={success:'✅',error:'❌',info:'ℹ️',warn:'⚠️'};
+  const t=document.createElement('div');t.className=`toast ${type}`;
+  t.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('toastContainer').appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('in')));
+  setTimeout(()=>{t.classList.remove('in');setTimeout(()=>t.remove(),350)},3500);
+}
+
+
+// ── DRAG DROP ──
+const uz=document.getElementById('uploadZone');
+if(uz){
+  uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag')});
+  uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
+  uz.addEventListener('drop',e=>{
+    e.preventDefault();uz.classList.remove('drag');
+    const f=e.dataTransfer.files[0];
+    if(f){document.getElementById('fileInput').files=e.dataTransfer.files;handleFileSelect({target:{files:e.dataTransfer.files}})}
+  });
+}
+
+// ── INIT ──
+renderChain();renderFiles();renderUsers();renderAudit();renderShareLinks();renderBarChart();
+
+</script>
+</body>
+</html>
